@@ -81,4 +81,75 @@ public class PerceptionSystemTests
 
         Assert.True(organism.Energy < 50f);
     }
+
+    [Fact]
+    public void Tick_OmnivoreTargetsPreyWhenInRange()
+    {
+        var world = new World();
+        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.8f), 0);
+        var prey = Organism.NewBorn(new Vector2(50, 40), new Genome(2, 1, 10, DietType: 0.1f), 0);
+        var organisms = new List<Organism> { hunter, prey };
+
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
+
+        Assert.Equal(prey, hunter.TargetPrey);
+        Assert.NotNull(hunter.Target);
+        Assert.Equal(prey.Position, hunter.Target!.Value);
+    }
+
+    [Fact]
+    public void Tick_AttackBuffer_PreventsCloseDietPredation()
+    {
+        var world = new World();
+        var a = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.6f), 0);
+        var b = Organism.NewBorn(new Vector2(50, 40), new Genome(4, 1, 50, DietType: 0.5f), 0);
+        var organisms = new List<Organism> { a, b };
+
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
+
+        Assert.Null(a.TargetPrey);
+        Assert.Null(b.TargetPrey);
+    }
+
+    [Fact]
+    public void Tick_PureCarnivoreIgnoresFoodTiles()
+    {
+        var world = new World();
+        world.SetFood(10, 10, true);
+        var carnivore = Organism.NewBorn(new Vector2(45, 45), new Genome(4, 1, 30, DietType: 0.97f), 0);
+        var organisms = new List<Organism> { carnivore };
+
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
+
+        Assert.Null(carnivore.Target);
+        Assert.Null(carnivore.TargetPrey);
+    }
+
+    [Fact]
+    public void Tick_OmnivorePicksNearerOfPreyOrFood()
+    {
+        var world = new World();
+        world.SetFood(10, 10, true);
+        var hunter = Organism.NewBorn(new Vector2(45, 45), new Genome(4, 1, 60, DietType: 0.7f), 0);
+        var farPrey = Organism.NewBorn(new Vector2(80, 80), new Genome(2, 1, 5, DietType: 0.1f), 0);
+        var organisms = new List<Organism> { hunter, farPrey };
+
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
+
+        Assert.Null(hunter.TargetPrey);
+        Assert.NotNull(hunter.Target);
+    }
+
+    [Fact]
+    public void Tick_PureHerbivoreIgnoresPrey()
+    {
+        var world = new World();
+        var herb = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.0f), 0);
+        var prey = Organism.NewBorn(new Vector2(50, 40), new Genome(2, 1, 10, DietType: 0.0f), 0);
+        var organisms = new List<Organism> { herb, prey };
+
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
+
+        Assert.Null(herb.TargetPrey);
+    }
 }
