@@ -44,13 +44,24 @@ public class RenderSystem
 
         foreach (var organism in organisms)
         {
-            Color color = organism.State == AIState.Rest ? RestColor : OrganismColor;
+            Color baseColor = BodyColor(organism.Genes.DietType);
+            Color drawColor = organism.State == AIState.Rest
+                ? Color.Lerp(baseColor, RestColor, 0.3f)
+                : baseColor;
+
             var rect = new Rectangle(
                 viewport.X + (int)organism.Position.X - 1,
                 viewport.Y + (int)organism.Position.Y - 1,
                 3,
                 3);
-            spriteBatch.Draw(_pixel, rect, color);
+            spriteBatch.Draw(_pixel, rect, drawColor);
         }
+    }
+
+    private static Color BodyColor(float dietType)
+    {
+        byte r = (byte)(dietType * 255f);
+        byte g = (byte)((1f - dietType) * 255f);
+        return new Color(r, g, (byte)0, (byte)255);
     }
 }
