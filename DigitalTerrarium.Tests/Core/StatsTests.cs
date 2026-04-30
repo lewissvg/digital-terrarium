@@ -36,4 +36,23 @@ public class StatsTests
         Assert.Equal(1.5f, snapshot.AvgMetabolism, precision: 3);
         Assert.Equal(20f, snapshot.AvgSenseRange, precision: 3);
     }
+
+    [Fact]
+    public void Compute_AveragesDietType()
+    {
+        var a = Organism.NewBorn(Vector2.Zero, new Genome(2, 1, 10, DietType: 0.0f), 0);
+        var b = Organism.NewBorn(Vector2.Zero, new Genome(4, 2, 30, DietType: 1.0f), 0);
+
+        var snapshot = Stats.Compute(new List<Organism> { a, b });
+
+        Assert.Equal(0.5f, snapshot.AvgDietType, precision: 3);
+    }
+
+    [Fact]
+    public void Compute_OnEmptyPopulation_AvgDietTypeIsZero()
+    {
+        var snapshot = Stats.Compute(new List<Organism>());
+
+        Assert.Equal(0f, snapshot.AvgDietType);
+    }
 }

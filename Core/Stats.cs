@@ -8,7 +8,8 @@ public readonly record struct StatsSnapshot(
     int MaxGeneration,
     float AvgSpeed,
     float AvgMetabolism,
-    float AvgSenseRange);
+    float AvgSenseRange,
+    float AvgDietType);
 
 public static class Stats
 {
@@ -16,7 +17,7 @@ public static class Stats
     {
         if (organisms.Count == 0)
         {
-            return new StatsSnapshot(0, 0, 0, 0f, 0f, 0f);
+            return new StatsSnapshot(0, 0, 0, 0f, 0f, 0f, 0f);
         }
 
         int oldest = 0;
@@ -24,22 +25,16 @@ public static class Stats
         float sumSpeed = 0f;
         float sumMetabolism = 0f;
         float sumSenseRange = 0f;
+        float sumDiet = 0f;
 
         foreach (var organism in organisms)
         {
-            if (organism.Age > oldest)
-            {
-                oldest = organism.Age;
-            }
-
-            if (organism.Generation > maxGeneration)
-            {
-                maxGeneration = organism.Generation;
-            }
-
+            if (organism.Age > oldest) oldest = organism.Age;
+            if (organism.Generation > maxGeneration) maxGeneration = organism.Generation;
             sumSpeed += organism.Genes.Speed;
             sumMetabolism += organism.Genes.Metabolism;
             sumSenseRange += organism.Genes.SenseRange;
+            sumDiet += organism.Genes.DietType;
         }
 
         int count = organisms.Count;
@@ -49,6 +44,7 @@ public static class Stats
             MaxGeneration: maxGeneration,
             AvgSpeed: sumSpeed / count,
             AvgMetabolism: sumMetabolism / count,
-            AvgSenseRange: sumSenseRange / count);
+            AvgSenseRange: sumSenseRange / count,
+            AvgDietType: sumDiet / count);
     }
 }
