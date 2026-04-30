@@ -30,6 +30,7 @@ public class Simulation
         AISystem.Tick(Organisms, Config, _rng);
         MovementSystem.Tick(World, Organisms, Config);
         FeedingSystem.Tick(World, Organisms, Config);
+        CombatSystem.Tick(Organisms);
         ReproductionSystem.Tick(Organisms, Config, _rng);
         DeathSystem.Tick(Organisms);
         LatestStats = Stats.Compute(Organisms);
