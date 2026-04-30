@@ -63,6 +63,10 @@ public class DevPanel
             () => _pending.StartingPopulation, value => _pending = _pending with { StartingPopulation = (int)value });
         AddSlider(panel, "MutationRate", 0f, 0.2f,
             () => _pending.MutationRate, value => _pending = _pending with { MutationRate = value });
+        AddSlider(panel, "InitialMaxDietType", 0f, 1f,
+            () => _pending.InitialMaxDietType, value => _pending = _pending with { InitialMaxDietType = value });
+        AddSlider(panel, "PerceptionCostCoefficient", 0f, 0.001f,
+            () => _pending.PerceptionCostCoefficient, value => _pending = _pending with { PerceptionCostCoefficient = value });
         AddSlider(panel, "ReproductionThreshold", 0.5f, 1f,
             () => _pending.ReproductionThreshold, value => _pending = _pending with { ReproductionThreshold = value });
         AddSlider(panel, "EnergyDrainCoefficient", 0.001f, 1f,
