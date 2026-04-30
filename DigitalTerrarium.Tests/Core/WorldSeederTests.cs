@@ -15,9 +15,16 @@ public class WorldSeederTests
 
         WorldSeeder.Seed(world, organisms, config, rng);
 
+        // Compute the biome-weighted expected density after biome scatter is applied
         int totalTiles = world.Width * world.Height;
+        double expectedDensity = 0.0;
+        for (int y = 0; y < world.Height; y++)
+            for (int x = 0; x < world.Width; x++)
+                expectedDensity += config.InitialFoodDensity * BiomeProperties.FoodRegenMultiplier(world.Biomes.At(x, y));
+        expectedDensity /= totalTiles;
+
         double actualDensity = (double)world.CountFood() / totalTiles;
-        Assert.InRange(actualDensity, 0.18, 0.22);
+        Assert.InRange(actualDensity, expectedDensity * 0.90, expectedDensity * 1.10);
     }
 
     [Fact]
@@ -59,7 +66,7 @@ public class WorldSeederTests
     public void Seed_ResetsExistingState()
     {
         var world = new World();
-        var organisms = new List<Organism> { Organism.NewBorn(default, new Genome(1, 1, 1, 0.5f), 0) };
+        var organisms = new List<Organism> { Organism.NewBorn(default, new Genome(1, 1, 1, 0.5f, 0.5f), 0) };
         world.SetFood(0, 0, true);
 
         SimulationConfig config = SimulationConfig.Default with { Seed = 1, StartingPopulation = 10 };
@@ -81,6 +88,76 @@ public class WorldSeederTests
         foreach (var organism in organisms)
         {
             Assert.InRange(organism.Genes.DietType, 0f, 0.4f);
+        }
+    }
+
+    [Fact]
+    public void Seed_GeneratesBiomeMap_NotAllGrassland()
+    {
+        var world = new World();
+        var organisms = new List<Organism>();
+        var config = SimulationConfig.Default with { Seed = 1 };
+
+        WorldSeeder.Seed(world, organisms, config, new Random(config.Seed));
+
+        var (m, g, s) = world.Biomes.CountTiles();
+        Assert.True(m > 0);
+        Assert.True(g > 0);
+        Assert.True(s > 0);
+    }
+
+    [Fact]
+    public void Seed_TerrainAffinity_SpansFullRange()
+    {
+        var world = new World();
+        var organisms = new List<Organism>();
+        var config = SimulationConfig.Default with { Seed = 1, StartingPopulation = 200 };
+        WorldSeeder.Seed(world, organisms, config, new Random(config.Seed));
+
+        foreach (var o in organisms)
+            Assert.InRange(o.Genes.TerrainAffinity, 0f, 1f);
+
+        float min = organisms.Min(o => o.Genes.TerrainAffinity);
+        float max = organisms.Max(o => o.Genes.TerrainAffinity);
+        Assert.True(min < 0.2f, "Should see organisms with low affinity");
+        Assert.True(max > 0.8f, "Should see organisms with high affinity");
+    }
+
+    [Fact]
+    public void Seed_FoodDensity_RespectsBiomeMultipliers()
+    {
+        var world = new World();
+        var organisms = new List<Organism>();
+        var config = SimulationConfig.Default with { Seed = 1, InitialFoodDensity = 0.15f };
+
+        WorldSeeder.Seed(world, organisms, config, new Random(config.Seed));
+
+        int mudTotal = 0, mudFood = 0;
+        int sandTotal = 0, sandFood = 0;
+        for (int y = 0; y < world.Height; y++)
+        {
+            for (int x = 0; x < world.Width; x++)
+            {
+                switch (world.Biomes.At(x, y))
+                {
+                    case BiomeType.Mud:
+                        mudTotal++;
+                        if (world.HasFood(x, y)) mudFood++;
+                        break;
+                    case BiomeType.Sand:
+                        sandTotal++;
+                        if (world.HasFood(x, y)) sandFood++;
+                        break;
+                }
+            }
+        }
+
+        if (mudTotal > 100 && sandTotal > 100)
+        {
+            double mudFraction = (double)mudFood / mudTotal;
+            double sandFraction = (double)sandFood / sandTotal;
+            Assert.True(mudFraction > sandFraction * 5,
+                $"Expected Mud food density (×2.0) much higher than Sand (×0.2), got mud={mudFraction:F3} sand={sandFraction:F3}");
         }
     }
 

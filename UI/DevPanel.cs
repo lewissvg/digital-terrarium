@@ -73,6 +73,12 @@ public class DevPanel
             () => _pending.EnergyDrainCoefficient, value => _pending = _pending with { EnergyDrainCoefficient = value });
         AddSlider(panel, "RestEnergyRecovery", 0f, 0.5f,
             () => _pending.RestEnergyRecovery, value => _pending = _pending with { RestEnergyRecovery = value });
+        AddSlider(panel, "BiomeNoiseScale", 5f, 50f,
+            () => _pending.BiomeNoiseScale,
+            v => _pending = _pending with { BiomeNoiseScale = (int)v });
+        AddSlider(panel, "MudSandBalance", 0.2f, 0.8f,
+            () => _pending.MudSandBalance,
+            v => _pending = _pending with { MudSandBalance = v });
 
         var applyButton = new Button { Content = new Label { Text = "Apply & Reset", TextColor = Microsoft.Xna.Framework.Color.Black } };
         applyButton.Click += (_, _) => _onApplyAndReset(_pending);

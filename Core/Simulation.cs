@@ -20,7 +20,7 @@ public class Simulation
         Organisms = new List<Organism>();
         _rng = new Random(config.Seed);
         WorldSeeder.Seed(World, Organisms, config, _rng);
-        LatestStats = Stats.Compute(Organisms);
+        LatestStats = Stats.Compute(Organisms, World);
     }
 
     public void Tick()
@@ -33,7 +33,7 @@ public class Simulation
         CombatSystem.Tick(Organisms);
         ReproductionSystem.Tick(Organisms, Config, _rng);
         DeathSystem.Tick(Organisms);
-        LatestStats = Stats.Compute(Organisms);
+        LatestStats = Stats.Compute(Organisms, World);
         TickCount++;
     }
 
@@ -43,6 +43,6 @@ public class Simulation
         _rng = new Random(newConfig.Seed);
         WorldSeeder.Seed(World, Organisms, newConfig, _rng);
         TickCount = 0;
-        LatestStats = Stats.Compute(Organisms);
+        LatestStats = Stats.Compute(Organisms, World);
     }
 }

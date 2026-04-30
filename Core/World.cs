@@ -11,10 +11,13 @@ public class World
     private readonly bool[,] _food;
     private int _foodCount;
 
+    public BiomeMap Biomes { get; }
+
     public World()
     {
         _food = new bool[Width, Height];
         _foodCount = 0;
+        Biomes = new BiomeMap(Width, Height);
     }
 
     public bool HasFood(int tileX, int tileY)
@@ -84,22 +87,16 @@ public class World
     public void RegenerateFood(float regenRate, Random rng)
     {
         int empty = CountEmptyTiles();
-        if (empty == 0)
-        {
-            return;
-        }
+        if (empty == 0) return;
 
-        double perTileChance = regenRate / empty;
+        double basePerTileChance = regenRate / empty;
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
             {
-                if (_food[x, y])
-                {
-                    continue;
-                }
-
-                if (rng.NextDouble() < perTileChance)
+                if (_food[x, y]) continue;
+                float biomeMult = BiomeProperties.FoodRegenMultiplier(Biomes.At(x, y));
+                if (rng.NextDouble() < basePerTileChance * biomeMult)
                 {
                     _food[x, y] = true;
                     _foodCount++;

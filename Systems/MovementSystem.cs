@@ -1,5 +1,6 @@
 using DigitalTerrarium.Core;
 using DigitalTerrarium.Entities;
+using Microsoft.Xna.Framework;
 
 namespace DigitalTerrarium.Systems;
 
@@ -11,46 +12,37 @@ public static class MovementSystem
     {
         float maxX = world.PixelWidth - 0.001f;
         float maxY = world.PixelHeight - 0.001f;
-        float restCapFraction = SimulationConfig.RestRecoveryCapFraction;
+        float restCap = SimulationConfig.RestRecoveryCapFraction;
 
-        foreach (var organism in organisms)
+        foreach (var o in organisms)
         {
-            organism.Age++;
+            o.Age++;
 
-            if (organism.State == AIState.Rest)
+            if (o.State == AIState.Rest)
             {
-                float cap = organism.MaxEnergy * restCapFraction;
-                if (organism.Energy < cap)
-                {
-                    organism.Energy = MathF.Min(cap, organism.Energy + config.RestEnergyRecovery);
-                }
-
+                float cap = o.MaxEnergy * restCap;
+                if (o.Energy < cap)
+                    o.Energy = MathF.Min(cap, o.Energy + config.RestEnergyRecovery);
                 continue;
             }
 
-            organism.Position += organism.Velocity;
+            // Drain: based on INTENDED velocity (raw)
+            float intendedSpeed = o.Velocity.Length();
+            float drain = config.EnergyDrainCoefficient * intendedSpeed * intendedSpeed * o.Genes.Metabolism * Mass;
+            o.Energy -= drain;
 
-            if (organism.Position.X < 0f)
-            {
-                organism.Position.X = 0f;
-            }
-            else if (organism.Position.X > maxX)
-            {
-                organism.Position.X = maxX;
-            }
+            // Effective displacement: scaled by biome × affinity match
+            var biome = world.Biomes.AtPixel(o.Position.X, o.Position.Y, world.TileSize);
+            float match = BiomeProperties.Match(o.Genes.TerrainAffinity, biome);
+            float baseMove = BiomeProperties.MovementBase(biome);
+            float effectiveMult = baseMove + (1f - baseMove) * match;
 
-            if (organism.Position.Y < 0f)
-            {
-                organism.Position.Y = 0f;
-            }
-            else if (organism.Position.Y > maxY)
-            {
-                organism.Position.Y = maxY;
-            }
+            o.Position += o.Velocity * effectiveMult;
 
-            float speed = organism.Velocity.Length();
-            float drain = config.EnergyDrainCoefficient * speed * speed * organism.Genes.Metabolism * Mass;
-            organism.Energy -= drain;
+            if (o.Position.X < 0) o.Position.X = 0;
+            else if (o.Position.X > maxX) o.Position.X = maxX;
+            if (o.Position.Y < 0) o.Position.Y = 0;
+            else if (o.Position.Y > maxY) o.Position.Y = maxY;
         }
     }
 }

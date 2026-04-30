@@ -18,6 +18,11 @@ public class Dashboard
         StatsSnapshot stats = simulation.LatestStats;
         string speedLabel = time.CurrentMultiplier == 0 ? "PAUSED" : $"{time.CurrentMultiplier}x";
 
+        int totalPop = stats.Population;
+        string mudPct   = totalPop == 0 ? "0%" : $"{(stats.PopMud * 100 / totalPop)}%";
+        string grassPct = totalPop == 0 ? "0%" : $"{(stats.PopGrassland * 100 / totalPop)}%";
+        string sandPct  = totalPop == 0 ? "0%" : $"{(stats.PopSand * 100 / totalPop)}%";
+
         string text =
             $"TICK:        {simulation.TickCount,8}\n" +
             $"SPEED:       {speedLabel}\n" +
@@ -31,7 +36,13 @@ public class Dashboard
             $"  Speed:      {stats.AvgSpeed:F2}\n" +
             $"  Metabolism: {stats.AvgMetabolism:F2}\n" +
             $"  Sense:      {stats.AvgSenseRange:F1}\n" +
-            $"  Diet:       {stats.AvgDietType:F2}";
+            $"  Diet:       {stats.AvgDietType:F2}\n" +
+            $"  Affinity:   {stats.AvgTerrainAffinity:F2}\n" +
+            "\n" +
+            "BIOMES (% pop)\n" +
+            $"  Mud:        {mudPct}\n" +
+            $"  Grassland:  {grassPct}\n" +
+            $"  Sand:       {sandPct}";
 
         spriteBatch.DrawString(_font, text, new Vector2(area.X + 8, area.Y + 8), Color.White);
     }

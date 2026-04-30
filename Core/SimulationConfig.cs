@@ -14,8 +14,11 @@ public record SimulationConfig
     public float EnergyDrainCoefficient { get; init; } = 0.05f;
     public float RestEnergyRecovery { get; init; } = 0.05f;
 
-    public const int WorldTilesX = 200;
-    public const int WorldTilesY = 200;
+    public int BiomeNoiseScale { get; init; } = 20;
+    public float MudSandBalance { get; init; } = 0.5f;
+
+    public const int WorldTilesX = 300;
+    public const int WorldTilesY = 300;
     public const int TileSize = 4;
     public const int TickRateHz = 30;
     public const float RestThresholdFraction = 0.20f;

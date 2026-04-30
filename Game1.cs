@@ -10,9 +10,9 @@ namespace DigitalTerrarium;
 
 public class Game1 : Game
 {
-    private const int WindowWidth = 1024;
-    private const int WindowHeight = 800;
-    private const int ViewportSize = 800;
+    private const int WindowWidth = 1424;
+    private const int WindowHeight = 1200;
+    private const int ViewportSize = 1200;
 
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch = null!;
@@ -111,7 +111,7 @@ public class Game1 : Game
             _spriteBatch,
             _simulation.Organisms,
             new Rectangle(0, 0, ViewportSize, ViewportSize));
-        _dashboard.Draw(_spriteBatch, new Rectangle(ViewportSize, 0, 224, 400), _simulation, _time);
+        _dashboard.Draw(_spriteBatch, new Rectangle(ViewportSize, 0, 224, WindowHeight), _simulation, _time);
         _spriteBatch.End();
 
         _desktop.Render();

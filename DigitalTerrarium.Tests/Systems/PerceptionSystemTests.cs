@@ -14,7 +14,7 @@ public class PerceptionSystemTests
         world.SetFood(10, 10, true);
         world.SetFood(50, 50, true);
 
-        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 30, 0.5f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 30, 0.5f, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
@@ -30,7 +30,7 @@ public class PerceptionSystemTests
         var world = new World();
         world.SetFood(50, 50, true);
 
-        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 5, 0.5f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 5, 0.5f, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
@@ -43,7 +43,7 @@ public class PerceptionSystemTests
     {
         var world = new World();
         world.SetFood(15, 10, true);
-        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 25, 0.5f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 25, 0.5f, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
@@ -55,7 +55,7 @@ public class PerceptionSystemTests
     public void Tick_AppliesPerceptionEnergyCost()
     {
         var world = new World();
-        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f), 0);
+        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
         organism.Energy = 100f;
         var organisms = new List<Organism> { organism };
 
@@ -70,7 +70,7 @@ public class PerceptionSystemTests
     public void Tick_PerceptionCostAppliesEvenInRestState()
     {
         var world = new World();
-        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f), 0);
+        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
         organism.Energy = 50f;
         organism.State = AIState.Rest;
         var organisms = new List<Organism> { organism };
@@ -86,8 +86,8 @@ public class PerceptionSystemTests
     public void Tick_OmnivoreTargetsPreyWhenInRange()
     {
         var world = new World();
-        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.8f), 0);
-        var prey = Organism.NewBorn(new Vector2(50, 40), new Genome(2, 1, 10, DietType: 0.1f), 0);
+        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.8f, TerrainAffinity: 0.5f), 0);
+        var prey = Organism.NewBorn(new Vector2(50, 40), new Genome(2, 1, 10, DietType: 0.1f, TerrainAffinity: 0.5f), 0);
         var organisms = new List<Organism> { hunter, prey };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
@@ -101,8 +101,8 @@ public class PerceptionSystemTests
     public void Tick_AttackBuffer_PreventsCloseDietPredation()
     {
         var world = new World();
-        var a = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.6f), 0);
-        var b = Organism.NewBorn(new Vector2(50, 40), new Genome(4, 1, 50, DietType: 0.5f), 0);
+        var a = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.6f, TerrainAffinity: 0.5f), 0);
+        var b = Organism.NewBorn(new Vector2(50, 40), new Genome(4, 1, 50, DietType: 0.5f, TerrainAffinity: 0.5f), 0);
         var organisms = new List<Organism> { a, b };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
@@ -116,7 +116,7 @@ public class PerceptionSystemTests
     {
         var world = new World();
         world.SetFood(10, 10, true);
-        var carnivore = Organism.NewBorn(new Vector2(45, 45), new Genome(4, 1, 30, DietType: 0.97f), 0);
+        var carnivore = Organism.NewBorn(new Vector2(45, 45), new Genome(4, 1, 30, DietType: 0.97f, TerrainAffinity: 0.5f), 0);
         var organisms = new List<Organism> { carnivore };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
@@ -130,8 +130,8 @@ public class PerceptionSystemTests
     {
         var world = new World();
         world.SetFood(10, 10, true);
-        var hunter = Organism.NewBorn(new Vector2(45, 45), new Genome(4, 1, 60, DietType: 0.7f), 0);
-        var farPrey = Organism.NewBorn(new Vector2(80, 80), new Genome(2, 1, 5, DietType: 0.1f), 0);
+        var hunter = Organism.NewBorn(new Vector2(45, 45), new Genome(4, 1, 60, DietType: 0.7f, TerrainAffinity: 0.5f), 0);
+        var farPrey = Organism.NewBorn(new Vector2(80, 80), new Genome(2, 1, 5, DietType: 0.1f, TerrainAffinity: 0.5f), 0);
         var organisms = new List<Organism> { hunter, farPrey };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
@@ -144,8 +144,8 @@ public class PerceptionSystemTests
     public void Tick_PureHerbivoreIgnoresPrey()
     {
         var world = new World();
-        var herb = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.0f), 0);
-        var prey = Organism.NewBorn(new Vector2(50, 40), new Genome(2, 1, 10, DietType: 0.0f), 0);
+        var herb = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 50, DietType: 0.0f, TerrainAffinity: 0.5f), 0);
+        var prey = Organism.NewBorn(new Vector2(50, 40), new Genome(2, 1, 10, DietType: 0.0f, TerrainAffinity: 0.5f), 0);
         var organisms = new List<Organism> { herb, prey };
 
         PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);

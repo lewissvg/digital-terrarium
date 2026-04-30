@@ -8,7 +8,7 @@ public class OrganismTests
     [Fact]
     public void MaxEnergy_FollowsFormula()
     {
-        var genes = new Genome(Speed: 4f, Metabolism: 1f, SenseRange: 40f, DietType: 0.5f);
+        var genes = new Genome(Speed: 4f, Metabolism: 1f, SenseRange: 40f, DietType: 0.5f, TerrainAffinity: 0.5f);
         Organism organism = Organism.NewBorn(Vector2.Zero, genes, generation: 0);
 
         Assert.Equal(140f, organism.MaxEnergy, precision: 3);
@@ -17,7 +17,7 @@ public class OrganismTests
     [Fact]
     public void NewBorn_StartsAtHalfMaxEnergy()
     {
-        var genes = new Genome(4f, 1f, 40f, 0.5f);
+        var genes = new Genome(4f, 1f, 40f, 0.5f, 0.5f);
         Organism organism = Organism.NewBorn(Vector2.Zero, genes, generation: 0);
 
         Assert.Equal(organism.MaxEnergy * 0.5f, organism.Energy, precision: 3);

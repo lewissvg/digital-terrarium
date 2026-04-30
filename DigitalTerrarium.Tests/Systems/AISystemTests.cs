@@ -12,7 +12,7 @@ public class AISystemTests
     [Fact]
     public void Tick_TargetsFoodWhenAvailableAndAboveRestThreshold()
     {
-        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.5f;
         organism.Target = new Vector2(20, 10);
 
@@ -26,7 +26,7 @@ public class AISystemTests
     [Fact]
     public void Tick_RestsWhenLowEnergyAndNoFood()
     {
-        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.10f;
         organism.Target = null;
 
@@ -39,7 +39,7 @@ public class AISystemTests
     [Fact]
     public void Tick_WandersWhenNoTargetAndAdequateEnergy()
     {
-        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.5f;
         organism.Target = null;
 
@@ -52,7 +52,7 @@ public class AISystemTests
     [Fact]
     public void Tick_RefreshesWanderHeadingWhenCounterExpires()
     {
-        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.5f;
         organism.Target = null;
         organism.WanderTicksRemaining = 0;

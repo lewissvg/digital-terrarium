@@ -7,6 +7,7 @@ public static class WorldSeeder
 {
     public static void Seed(World world, List<Organism> organisms, SimulationConfig config, Random rng)
     {
+        world.Biomes.Generate(config.BiomeNoiseScale, config.MudSandBalance, rng);
         world.Clear();
         organisms.Clear();
 
@@ -14,10 +15,9 @@ public static class WorldSeeder
         {
             for (int x = 0; x < world.Width; x++)
             {
-                if (rng.NextDouble() < config.InitialFoodDensity)
-                {
+                float biomeMult = BiomeProperties.FoodRegenMultiplier(world.Biomes.At(x, y));
+                if (rng.NextDouble() < config.InitialFoodDensity * biomeMult)
                     world.SetFood(x, y, true);
-                }
             }
         }
 
@@ -27,7 +27,8 @@ public static class WorldSeeder
             float metabolism = Lerp(0.5f, 1.5f, (float)rng.NextDouble());
             float senseRange = Lerp(10f, 80f, (float)rng.NextDouble());
             float dietType = (float)rng.NextDouble() * config.InitialMaxDietType;
-            var genes = new Genome(speed, metabolism, senseRange, dietType);
+            float affinity = (float)rng.NextDouble();
+            var genes = new Genome(speed, metabolism, senseRange, dietType, affinity);
 
             float px = (float)rng.NextDouble() * world.PixelWidth;
             float py = (float)rng.NextDouble() * world.PixelHeight;

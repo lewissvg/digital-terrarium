@@ -9,42 +9,53 @@ public readonly record struct StatsSnapshot(
     float AvgSpeed,
     float AvgMetabolism,
     float AvgSenseRange,
-    float AvgDietType);
+    float AvgDietType,
+    float AvgTerrainAffinity,
+    int PopMud,
+    int PopGrassland,
+    int PopSand);
 
 public static class Stats
 {
-    public static StatsSnapshot Compute(List<Organism> organisms)
+    public static StatsSnapshot Compute(List<Organism> organisms, World world)
     {
         if (organisms.Count == 0)
+            return new StatsSnapshot(0, 0, 0, 0f, 0f, 0f, 0f, 0f, 0, 0, 0);
+
+        int oldest = 0, maxGen = 0;
+        float sumSpeed = 0f, sumMet = 0f, sumSense = 0f, sumDiet = 0f, sumAff = 0f;
+        int popMud = 0, popGrass = 0, popSand = 0;
+
+        foreach (var o in organisms)
         {
-            return new StatsSnapshot(0, 0, 0, 0f, 0f, 0f, 0f);
+            if (o.Age > oldest) oldest = o.Age;
+            if (o.Generation > maxGen) maxGen = o.Generation;
+            sumSpeed += o.Genes.Speed;
+            sumMet   += o.Genes.Metabolism;
+            sumSense += o.Genes.SenseRange;
+            sumDiet  += o.Genes.DietType;
+            sumAff   += o.Genes.TerrainAffinity;
+
+            switch (world.Biomes.AtPixel(o.Position.X, o.Position.Y, world.TileSize))
+            {
+                case BiomeType.Mud:       popMud++; break;
+                case BiomeType.Grassland: popGrass++; break;
+                case BiomeType.Sand:      popSand++; break;
+            }
         }
 
-        int oldest = 0;
-        int maxGeneration = 0;
-        float sumSpeed = 0f;
-        float sumMetabolism = 0f;
-        float sumSenseRange = 0f;
-        float sumDiet = 0f;
-
-        foreach (var organism in organisms)
-        {
-            if (organism.Age > oldest) oldest = organism.Age;
-            if (organism.Generation > maxGeneration) maxGeneration = organism.Generation;
-            sumSpeed += organism.Genes.Speed;
-            sumMetabolism += organism.Genes.Metabolism;
-            sumSenseRange += organism.Genes.SenseRange;
-            sumDiet += organism.Genes.DietType;
-        }
-
-        int count = organisms.Count;
+        int n = organisms.Count;
         return new StatsSnapshot(
-            Population: count,
-            OldestAge: oldest,
-            MaxGeneration: maxGeneration,
-            AvgSpeed: sumSpeed / count,
-            AvgMetabolism: sumMetabolism / count,
-            AvgSenseRange: sumSenseRange / count,
-            AvgDietType: sumDiet / count);
+            Population:         n,
+            OldestAge:          oldest,
+            MaxGeneration:      maxGen,
+            AvgSpeed:           sumSpeed / n,
+            AvgMetabolism:      sumMet / n,
+            AvgSenseRange:      sumSense / n,
+            AvgDietType:        sumDiet / n,
+            AvgTerrainAffinity: sumAff / n,
+            PopMud:             popMud,
+            PopGrassland:       popGrass,
+            PopSand:            popSand);
     }
 }

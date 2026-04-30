@@ -9,8 +9,8 @@ public class CombatSystemTests
     [Fact]
     public void Tick_PredatorWithinRange_KillsPreyAndAbsorbsEnergy()
     {
-        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 1.0f), 0);
-        var prey = Organism.NewBorn(new Vector2(42, 40), new Genome(2, 1, 10, DietType: 0.0f), 0);
+        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 1.0f, TerrainAffinity: 0.5f), 0);
+        var prey = Organism.NewBorn(new Vector2(42, 40), new Genome(2, 1, 10, DietType: 0.0f, TerrainAffinity: 0.5f), 0);
         prey.Energy = 50f;
         hunter.Energy = 50f;
         hunter.TargetPrey = prey;
@@ -27,8 +27,8 @@ public class CombatSystemTests
     [Fact]
     public void Tick_PredatorOutsideRange_DoesNotKill()
     {
-        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 1.0f), 0);
-        var prey = Organism.NewBorn(new Vector2(80, 40), new Genome(2, 1, 10, DietType: 0.0f), 0);
+        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 1.0f, TerrainAffinity: 0.5f), 0);
+        var prey = Organism.NewBorn(new Vector2(80, 40), new Genome(2, 1, 10, DietType: 0.0f, TerrainAffinity: 0.5f), 0);
         prey.Energy = 50f;
         hunter.TargetPrey = prey;
         hunter.Target = prey.Position;
@@ -44,8 +44,8 @@ public class CombatSystemTests
     [Fact]
     public void Tick_OmnivoreYieldIsScaledByDietType()
     {
-        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 0.6f), 0);
-        var prey = Organism.NewBorn(new Vector2(42, 40), new Genome(2, 1, 10, DietType: 0.0f), 0);
+        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 0.6f, TerrainAffinity: 0.5f), 0);
+        var prey = Organism.NewBorn(new Vector2(42, 40), new Genome(2, 1, 10, DietType: 0.0f, TerrainAffinity: 0.5f), 0);
         prey.Energy = 100f;
         hunter.Energy = 50f;
         hunter.TargetPrey = prey;
@@ -60,9 +60,9 @@ public class CombatSystemTests
     [Fact]
     public void Tick_TwoPredatorsSamePrey_FirstWins()
     {
-        var p1 = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 0.9f), 0);
-        var p2 = Organism.NewBorn(new Vector2(41, 41), new Genome(4, 1, 30, DietType: 0.9f), 0);
-        var prey = Organism.NewBorn(new Vector2(42, 40), new Genome(2, 1, 10, DietType: 0.0f), 0);
+        var p1 = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 0.9f, TerrainAffinity: 0.5f), 0);
+        var p2 = Organism.NewBorn(new Vector2(41, 41), new Genome(4, 1, 30, DietType: 0.9f, TerrainAffinity: 0.5f), 0);
+        var prey = Organism.NewBorn(new Vector2(42, 40), new Genome(2, 1, 10, DietType: 0.0f, TerrainAffinity: 0.5f), 0);
         prey.Energy = 50f;
         p1.TargetPrey = prey;
         p1.Target = prey.Position;
@@ -82,7 +82,7 @@ public class CombatSystemTests
     [Fact]
     public void Tick_NoTarget_NoOp()
     {
-        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 1.0f), 0);
+        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, DietType: 1.0f, TerrainAffinity: 0.5f), 0);
         organism.Energy = 50f;
         float before = organism.Energy;
 
