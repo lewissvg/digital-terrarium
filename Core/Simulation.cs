@@ -26,7 +26,7 @@ public class Simulation
     public void Tick()
     {
         World.RegenerateFood(Config.FoodRegenRate, _rng);
-        PerceptionSystem.Tick(World, Organisms);
+        PerceptionSystem.Tick(World, Organisms, Config);
         AISystem.Tick(Organisms, Config, _rng);
         MovementSystem.Tick(World, Organisms, Config);
         FeedingSystem.Tick(World, Organisms, Config);

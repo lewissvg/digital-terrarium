@@ -17,7 +17,7 @@ public class PerceptionSystemTests
         Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 30, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
-        PerceptionSystem.Tick(world, organisms);
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
 
         Assert.NotNull(organism.Target);
         Assert.Equal(10 * 4 + 2, organism.Target!.Value.X, precision: 1);
@@ -33,7 +33,7 @@ public class PerceptionSystemTests
         Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 5, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
-        PerceptionSystem.Tick(world, organisms);
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
 
         Assert.Null(organism.Target);
     }
@@ -46,8 +46,39 @@ public class PerceptionSystemTests
         Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 25, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
-        PerceptionSystem.Tick(world, organisms);
+        PerceptionSystem.Tick(world, organisms, SimulationConfig.Default);
 
         Assert.NotNull(organism.Target);
+    }
+
+    [Fact]
+    public void Tick_AppliesPerceptionEnergyCost()
+    {
+        var world = new World();
+        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f), 0);
+        organism.Energy = 100f;
+        var organisms = new List<Organism> { organism };
+
+        var config = SimulationConfig.Default with { PerceptionCostCoefficient = 0.001f };
+
+        PerceptionSystem.Tick(world, organisms, config);
+
+        Assert.Equal(100f - 2.827f, organism.Energy, precision: 2);
+    }
+
+    [Fact]
+    public void Tick_PerceptionCostAppliesEvenInRestState()
+    {
+        var world = new World();
+        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f), 0);
+        organism.Energy = 50f;
+        organism.State = AIState.Rest;
+        var organisms = new List<Organism> { organism };
+
+        var config = SimulationConfig.Default with { PerceptionCostCoefficient = 0.0001f };
+
+        PerceptionSystem.Tick(world, organisms, config);
+
+        Assert.True(organism.Energy < 50f);
     }
 }

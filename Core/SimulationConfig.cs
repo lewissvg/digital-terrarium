@@ -9,6 +9,7 @@ public record SimulationConfig
     public int StartingPopulation { get; init; } = 50;
     public float MutationRate { get; init; } = 0.05f;
     public float InitialMaxDietType { get; init; } = 0.4f;
+    public float PerceptionCostCoefficient { get; init; } = 0.0001f;
     public float ReproductionThreshold { get; init; } = 0.9f;
     public float EnergyDrainCoefficient { get; init; } = 0.05f;
     public float RestEnergyRecovery { get; init; } = 0.05f;

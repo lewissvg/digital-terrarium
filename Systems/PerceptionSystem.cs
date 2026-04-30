@@ -6,13 +6,16 @@ namespace DigitalTerrarium.Systems;
 
 public static class PerceptionSystem
 {
-    public static void Tick(World world, List<Organism> organisms)
+    public static void Tick(World world, List<Organism> organisms, SimulationConfig config)
     {
         int tileSize = world.TileSize;
         float halfTile = tileSize * 0.5f;
 
         foreach (var organism in organisms)
         {
+            float perceptionCost = config.PerceptionCostCoefficient * MathF.PI * organism.Genes.SenseRange * organism.Genes.SenseRange;
+            organism.Energy -= perceptionCost;
+
             int centerTileX = (int)(organism.Position.X / tileSize);
             int centerTileY = (int)(organism.Position.Y / tileSize);
             int radiusTiles = (int)MathF.Ceiling(organism.Genes.SenseRange / tileSize);
