@@ -49,12 +49,27 @@ public class RenderSystem
                 ? Color.Lerp(baseColor, RestColor, 0.3f)
                 : baseColor;
 
-            var rect = new Rectangle(
-                viewport.X + (int)organism.Position.X - 1,
-                viewport.Y + (int)organism.Position.Y - 1,
-                3,
-                3);
-            spriteBatch.Draw(_pixel, rect, drawColor);
+            int bodyLength = Math.Max(2, (int)MathF.Round(organism.Genes.Speed));
+            int bodyWidth = Math.Max(2, (int)MathF.Round(4f / Math.Max(0.5f, organism.Genes.Metabolism)));
+
+            float rotation = organism.Velocity.LengthSquared() > 0.01f
+                ? MathF.Atan2(organism.Velocity.Y, organism.Velocity.X)
+                : 0f;
+
+            var origin = new Vector2(0.5f, 0.5f);
+            var screenPosition = new Vector2(viewport.X + organism.Position.X, viewport.Y + organism.Position.Y);
+            var scale = new Vector2(bodyLength, bodyWidth);
+
+            spriteBatch.Draw(
+                texture: _pixel,
+                position: screenPosition,
+                sourceRectangle: null,
+                color: drawColor,
+                rotation: rotation,
+                origin: origin,
+                scale: scale,
+                effects: SpriteEffects.None,
+                layerDepth: 0f);
         }
     }
 
