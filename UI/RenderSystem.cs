@@ -8,6 +8,7 @@ namespace DigitalTerrarium.UI;
 public class RenderSystem
 {
     private readonly Texture2D _pixel;
+    public Texture2D Pixel => _pixel;
     private static readonly Color BackgroundColor = new(15, 15, 20);
     private static readonly Color FoodColor = new(80, 180, 80);
     private static readonly Color OrganismColor = new(220, 220, 220);
