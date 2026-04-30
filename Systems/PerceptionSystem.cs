@@ -53,7 +53,7 @@ public static class PerceptionSystem
             }
 
             float bestPreyDistanceSquared = float.MaxValue;
-            Organism? bestPrey = null;
+            Organism bestPrey = null;
 
             foreach (var other in organisms)
             {

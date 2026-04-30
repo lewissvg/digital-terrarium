@@ -13,7 +13,7 @@ public class Organism
     public Genome Genes = null!;
     public AIState State;
     public Vector2? Target;
-    public Organism? TargetPrey;
+    public Organism TargetPrey;
     public int WanderTicksRemaining;
 
     public static float ComputeMaxEnergy(Genome genes) =>
