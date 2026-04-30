@@ -18,6 +18,7 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch = null!;
     private Simulation _simulation = null!;
     private RenderSystem _renderSystem = null!;
+    private PerceptionRadar _perceptionRadar = null!;
     private TimeController _time = null!;
     private KeyboardState _prevKeyboard;
     private Dashboard _dashboard = null!;
@@ -55,6 +56,7 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _renderSystem = new RenderSystem(GraphicsDevice);
+        _perceptionRadar = new PerceptionRadar(_renderSystem.Pixel);
         SpriteFont font = Content.Load<SpriteFont>("Fonts/DashboardFont");
         _dashboard = new Dashboard(font);
     }
@@ -84,6 +86,11 @@ public class Game1 : Game
             }
         }
 
+        if (keyboard.IsKeyDown(Keys.V) && _prevKeyboard.IsKeyUp(Keys.V))
+        {
+            _perceptionRadar.Visible = !_perceptionRadar.Visible;
+        }
+
         _time.RunPendingTicks(gameTime.ElapsedGameTime.TotalSeconds, _simulation.Tick);
 
         _prevKeyboard = keyboard;
@@ -94,10 +101,14 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(new Color(8, 8, 12));
 
-        _spriteBatch.Begin();
+        _spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
         _renderSystem.Draw(
             _spriteBatch,
             _simulation.World,
+            _simulation.Organisms,
+            new Rectangle(0, 0, ViewportSize, ViewportSize));
+        _perceptionRadar.Draw(
+            _spriteBatch,
             _simulation.Organisms,
             new Rectangle(0, 0, ViewportSize, ViewportSize));
         _dashboard.Draw(_spriteBatch, new Rectangle(ViewportSize, 0, 224, 400), _simulation, _time);
