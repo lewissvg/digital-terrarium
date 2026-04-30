@@ -67,4 +67,32 @@ public class WorldSeederTests
 
         Assert.Equal(10, organisms.Count);
     }
+
+    [Fact]
+    public void Seed_DietType_RespectsInitialMaxDietType()
+    {
+        var world = new World();
+        var organisms = new List<Organism>();
+        var config = SimulationConfig.Default with { Seed = 1, StartingPopulation = 200, InitialMaxDietType = 0.4f };
+        var rng = new Random(config.Seed);
+
+        WorldSeeder.Seed(world, organisms, config, rng);
+
+        foreach (var organism in organisms)
+        {
+            Assert.InRange(organism.Genes.DietType, 0f, 0.4f);
+        }
+    }
+
+    [Fact]
+    public void Seed_DietType_AtZero_AllPureHerbivores()
+    {
+        var world = new World();
+        var organisms = new List<Organism>();
+        var config = SimulationConfig.Default with { Seed = 1, StartingPopulation = 50, InitialMaxDietType = 0f };
+
+        WorldSeeder.Seed(world, organisms, config, new Random(config.Seed));
+
+        Assert.All(organisms, organism => Assert.Equal(0f, organism.Genes.DietType));
+    }
 }

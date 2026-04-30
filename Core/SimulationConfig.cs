@@ -8,6 +8,7 @@ public record SimulationConfig
     public float FoodEnergyValue { get; init; } = 25f;
     public int StartingPopulation { get; init; } = 50;
     public float MutationRate { get; init; } = 0.05f;
+    public float InitialMaxDietType { get; init; } = 0.4f;
     public float ReproductionThreshold { get; init; } = 0.9f;
     public float EnergyDrainCoefficient { get; init; } = 0.05f;
     public float RestEnergyRecovery { get; init; } = 0.05f;
