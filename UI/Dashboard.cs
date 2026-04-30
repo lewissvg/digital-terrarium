@@ -30,7 +30,8 @@ public class Dashboard
             "GENE AVERAGES\n" +
             $"  Speed:      {stats.AvgSpeed:F2}\n" +
             $"  Metabolism: {stats.AvgMetabolism:F2}\n" +
-            $"  Sense:      {stats.AvgSenseRange:F1}";
+            $"  Sense:      {stats.AvgSenseRange:F1}\n" +
+            $"  Diet:       {stats.AvgDietType:F2}";
 
         spriteBatch.DrawString(_font, text, new Vector2(area.X + 8, area.Y + 8), Color.White);
     }
