@@ -11,7 +11,7 @@ public class MovementSystemTests
     public void Tick_AppliesVelocityToPosition()
     {
         var world = new World();
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.Velocity = new Vector2(2, -1);
         organism.State = AIState.Target;
 
@@ -25,7 +25,7 @@ public class MovementSystemTests
     public void Tick_ClampsAtWorldBounds()
     {
         var world = new World();
-        Organism organism = Organism.NewBorn(new Vector2(0, 0), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(0, 0), new Genome(4, 1, 30, 0.5f), 0);
         organism.Velocity = new Vector2(-5, -5);
         organism.State = AIState.Wander;
 
@@ -41,7 +41,7 @@ public class MovementSystemTests
     public void Tick_DrainsEnergyWhileMoving()
     {
         var world = new World();
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(Speed: 4f, Metabolism: 1f, SenseRange: 30f), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(Speed: 4f, Metabolism: 1f, SenseRange: 30f, DietType: 0.5f), 0);
         organism.Velocity = new Vector2(4, 0);
         organism.State = AIState.Target;
         float energyBefore = organism.Energy;
@@ -55,7 +55,7 @@ public class MovementSystemTests
     public void Tick_RestingOrganismRecoversEnergyUpToCap()
     {
         var world = new World();
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.State = AIState.Rest;
         organism.Velocity = Vector2.Zero;
         organism.Energy = organism.MaxEnergy * 0.10f;
@@ -70,7 +70,7 @@ public class MovementSystemTests
     public void Tick_RestingOrganismDoesNotRecoverPastCap()
     {
         var world = new World();
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.State = AIState.Rest;
         organism.Velocity = Vector2.Zero;
         organism.Energy = organism.MaxEnergy * 0.50f;
@@ -85,7 +85,7 @@ public class MovementSystemTests
     public void Tick_IncrementsAge()
     {
         var world = new World();
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.State = AIState.Wander;
 
         MovementSystem.Tick(world, new List<Organism> { organism }, SimulationConfig.Default);

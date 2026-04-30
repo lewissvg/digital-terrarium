@@ -22,8 +22,8 @@ public class StatsTests
     [Fact]
     public void Compute_AveragesGenes()
     {
-        Organism a = Organism.NewBorn(Vector2.Zero, new Genome(2, 1, 10), 0);
-        Organism b = Organism.NewBorn(Vector2.Zero, new Genome(4, 2, 30), 5);
+        Organism a = Organism.NewBorn(Vector2.Zero, new Genome(2, 1, 10, 0.5f), 0);
+        Organism b = Organism.NewBorn(Vector2.Zero, new Genome(4, 2, 30, 0.5f), 5);
         a.Age = 100;
         b.Age = 50;
 

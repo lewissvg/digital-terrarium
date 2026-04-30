@@ -59,7 +59,7 @@ public class WorldSeederTests
     public void Seed_ResetsExistingState()
     {
         var world = new World();
-        var organisms = new List<Organism> { Organism.NewBorn(default, new Genome(1, 1, 1), 0) };
+        var organisms = new List<Organism> { Organism.NewBorn(default, new Genome(1, 1, 1, 0.5f), 0) };
         world.SetFood(0, 0, true);
 
         SimulationConfig config = SimulationConfig.Default with { Seed = 1, StartingPopulation = 10 };

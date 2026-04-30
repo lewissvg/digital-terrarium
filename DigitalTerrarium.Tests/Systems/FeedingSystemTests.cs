@@ -12,7 +12,7 @@ public class FeedingSystemTests
     {
         var world = new World();
         world.SetFood(10, 10, true);
-        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 30, 0.5f), 0);
         organism.Energy = 50;
 
         FeedingSystem.Tick(world, new List<Organism> { organism }, SimulationConfig.Default);
@@ -26,7 +26,7 @@ public class FeedingSystemTests
     {
         var world = new World();
         world.SetFood(10, 10, true);
-        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy - 5;
 
         FeedingSystem.Tick(world, new List<Organism> { organism }, SimulationConfig.Default);
@@ -38,7 +38,7 @@ public class FeedingSystemTests
     public void Tick_DoesNothingOnEmptyTile()
     {
         var world = new World();
-        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 30, 0.5f), 0);
         float before = organism.Energy;
 
         FeedingSystem.Tick(world, new List<Organism> { organism }, SimulationConfig.Default);

@@ -26,7 +26,7 @@ public static class WorldSeeder
             float speed = Lerp(2f, 8f, (float)rng.NextDouble());
             float metabolism = Lerp(0.5f, 1.5f, (float)rng.NextDouble());
             float senseRange = Lerp(10f, 80f, (float)rng.NextDouble());
-            var genes = new Genome(speed, metabolism, senseRange);
+            var genes = new Genome(speed, metabolism, senseRange, DietType: 0f);
 
             float px = (float)rng.NextDouble() * world.PixelWidth;
             float py = (float)rng.NextDouble() * world.PixelHeight;

@@ -10,7 +10,7 @@ public class ReproductionSystemTests
     [Fact]
     public void Tick_SplitsAtThreshold()
     {
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.95f;
         var organisms = new List<Organism> { organism };
 
@@ -23,7 +23,7 @@ public class ReproductionSystemTests
     [Fact]
     public void Tick_DoesNotSplitBelowThreshold()
     {
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.5f;
         var organisms = new List<Organism> { organism };
 
@@ -35,7 +35,7 @@ public class ReproductionSystemTests
     [Fact]
     public void Tick_HalvesParentEnergyAndAssignsHalfToChild()
     {
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.95f;
         float originalEnergy = organism.Energy;
         var organisms = new List<Organism> { organism };
@@ -50,7 +50,7 @@ public class ReproductionSystemTests
     [Fact]
     public void Tick_AppliesMutationWithinRange()
     {
-        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.95f;
         var organisms = new List<Organism> { organism };
         SimulationConfig config = SimulationConfig.Default with { MutationRate = 0.05f };

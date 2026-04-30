@@ -14,7 +14,7 @@ public class PerceptionSystemTests
         world.SetFood(10, 10, true);
         world.SetFood(50, 50, true);
 
-        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 30), 0);
+        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 30, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
         PerceptionSystem.Tick(world, organisms);
@@ -30,7 +30,7 @@ public class PerceptionSystemTests
         var world = new World();
         world.SetFood(50, 50, true);
 
-        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 5), 0);
+        Organism organism = Organism.NewBorn(new Vector2(40, 40), new Genome(1, 1, 5, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
         PerceptionSystem.Tick(world, organisms);
@@ -43,7 +43,7 @@ public class PerceptionSystemTests
     {
         var world = new World();
         world.SetFood(15, 10, true);
-        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 25), 0);
+        Organism organism = Organism.NewBorn(new Vector2(42, 42), new Genome(1, 1, 25, 0.5f), 0);
         var organisms = new List<Organism> { organism };
 
         PerceptionSystem.Tick(world, organisms);
