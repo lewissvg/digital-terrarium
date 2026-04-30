@@ -47,7 +47,8 @@ public static class PerceptionSystem
                 }
             }
 
-            organism.TargetFood = best;
+            organism.Target = best;
+            organism.TargetPrey = null;
         }
     }
 }

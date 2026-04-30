@@ -14,7 +14,7 @@ public class AISystemTests
     {
         Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.5f;
-        organism.TargetFood = new Vector2(20, 10);
+        organism.Target = new Vector2(20, 10);
 
         AISystem.Tick(new List<Organism> { organism }, Config, new Random(1));
 
@@ -28,7 +28,7 @@ public class AISystemTests
     {
         Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.10f;
-        organism.TargetFood = null;
+        organism.Target = null;
 
         AISystem.Tick(new List<Organism> { organism }, Config, new Random(1));
 
@@ -41,7 +41,7 @@ public class AISystemTests
     {
         Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.5f;
-        organism.TargetFood = null;
+        organism.Target = null;
 
         AISystem.Tick(new List<Organism> { organism }, Config, new Random(1));
 
@@ -54,7 +54,7 @@ public class AISystemTests
     {
         Organism organism = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f), 0);
         organism.Energy = organism.MaxEnergy * 0.5f;
-        organism.TargetFood = null;
+        organism.Target = null;
         organism.WanderTicksRemaining = 0;
 
         AISystem.Tick(new List<Organism> { organism }, Config, new Random(1));

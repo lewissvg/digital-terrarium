@@ -19,9 +19,9 @@ public class PerceptionSystemTests
 
         PerceptionSystem.Tick(world, organisms);
 
-        Assert.NotNull(organism.TargetFood);
-        Assert.Equal(10 * 4 + 2, organism.TargetFood!.Value.X, precision: 1);
-        Assert.Equal(10 * 4 + 2, organism.TargetFood!.Value.Y, precision: 1);
+        Assert.NotNull(organism.Target);
+        Assert.Equal(10 * 4 + 2, organism.Target!.Value.X, precision: 1);
+        Assert.Equal(10 * 4 + 2, organism.Target!.Value.Y, precision: 1);
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class PerceptionSystemTests
 
         PerceptionSystem.Tick(world, organisms);
 
-        Assert.Null(organism.TargetFood);
+        Assert.Null(organism.Target);
     }
 
     [Fact]
@@ -48,6 +48,6 @@ public class PerceptionSystemTests
 
         PerceptionSystem.Tick(world, organisms);
 
-        Assert.NotNull(organism.TargetFood);
+        Assert.NotNull(organism.Target);
     }
 }

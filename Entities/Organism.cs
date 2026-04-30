@@ -12,7 +12,8 @@ public class Organism
     public int Generation;
     public Genome Genes = null!;
     public AIState State;
-    public Vector2? TargetFood;
+    public Vector2? Target;
+    public Organism? TargetPrey;
     public int WanderTicksRemaining;
 
     public static float ComputeMaxEnergy(Genome genes) =>
@@ -31,7 +32,8 @@ public class Organism
             Generation = generation,
             Genes = genes,
             State = AIState.Wander,
-            TargetFood = null,
+            Target = null,
+            TargetPrey = null,
             WanderTicksRemaining = 0
         };
     }

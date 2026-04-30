@@ -14,10 +14,10 @@ public static class AISystem
         {
             float restThreshold = organism.MaxEnergy * SimulationConfig.RestThresholdFraction;
 
-            if (organism.TargetFood.HasValue && organism.Energy >= restThreshold)
+            if (organism.Target.HasValue && organism.Energy >= restThreshold)
             {
                 organism.State = AIState.Target;
-                Vector2 direction = organism.TargetFood.Value - organism.Position;
+                Vector2 direction = organism.Target.Value - organism.Position;
                 if (direction.LengthSquared() > 0.0001f)
                 {
                     direction.Normalize();
@@ -25,7 +25,7 @@ public static class AISystem
 
                 organism.Velocity = direction * organism.Genes.Speed;
             }
-            else if (organism.Energy < restThreshold && organism.TargetFood == null)
+            else if (organism.Energy < restThreshold && organism.Target == null)
             {
                 organism.State = AIState.Rest;
                 organism.Velocity = Vector2.Zero;
