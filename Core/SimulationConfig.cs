@@ -20,6 +20,9 @@ public record SimulationConfig
     public float ReproductionMatchThreshold { get; init; } = 0.5f;
     public float CarnivoreTax { get; init; } = 0.5f;
     public int StatsSmoothingTicks { get; init; } = 30;
+    public int WindowWidth { get; init; } = 1424;
+    public int WindowHeight { get; init; } = 1200;
+    public int ViewportSize { get; init; } = 1200;
 
     public int WorldTilesX { get; init; } = 300;
     public int WorldTilesY { get; init; } = 300;

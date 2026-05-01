@@ -10,9 +10,7 @@ namespace DigitalTerrarium;
 
 public class Game1 : Game
 {
-    private const int WindowWidth = 1424;
-    private const int WindowHeight = 1200;
-    private const int ViewportSize = 1200;
+    private SimulationConfig _config = SimulationConfig.WithWallClockSeed();
 
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch = null!;
@@ -29,8 +27,8 @@ public class Game1 : Game
     {
         _graphics = new GraphicsDeviceManager(this)
         {
-            PreferredBackBufferWidth = WindowWidth,
-            PreferredBackBufferHeight = WindowHeight
+            PreferredBackBufferWidth  = _config.WindowWidth,
+            PreferredBackBufferHeight = _config.WindowHeight
         };
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
@@ -38,7 +36,7 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        _simulation = new Simulation(SimulationConfig.WithWallClockSeed());
+        _simulation = new Simulation(_config);
         _time = new TimeController();
         MyraEnvironment.Game = this;
         _desktop = new Desktop();
@@ -102,16 +100,18 @@ public class Game1 : Game
         GraphicsDevice.Clear(new Color(8, 8, 12));
 
         _spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
+        int viewportSize = _simulation.Config.ViewportSize;
+        int windowHeight = _simulation.Config.WindowHeight;
         _renderSystem.Draw(
             _spriteBatch,
             _simulation.World,
             _simulation.Organisms,
-            new Rectangle(0, 0, ViewportSize, ViewportSize));
+            new Rectangle(0, 0, viewportSize, viewportSize));
         _perceptionRadar.Draw(
             _spriteBatch,
             _simulation.Organisms,
-            new Rectangle(0, 0, ViewportSize, ViewportSize));
-        _dashboard.Draw(_spriteBatch, new Rectangle(ViewportSize, 0, 224, WindowHeight), _simulation, _time);
+            new Rectangle(0, 0, viewportSize, viewportSize));
+        _dashboard.Draw(_spriteBatch, new Rectangle(viewportSize, 0, 224, windowHeight), _simulation, _time);
         _spriteBatch.End();
 
         _desktop.Render();
