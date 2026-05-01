@@ -12,6 +12,7 @@ public class Simulation
     public StatsSnapshot LatestStats { get; private set; }
 
     private Random _rng;
+    private SpatialIndex _spatialIndex = null!;
 
     public Simulation(SimulationConfig config)
     {
@@ -19,14 +20,16 @@ public class Simulation
         World = new World(config);
         Organisms = new List<Organism>();
         _rng = new Random(config.Seed);
+        _spatialIndex = new SpatialIndex(World.PixelWidth, World.PixelHeight, config.SpatialCellPixels);
         WorldSeeder.Seed(World, Organisms, config, _rng);
         LatestStats = Stats.Compute(Organisms, World);
     }
 
     public void Tick()
     {
+        _spatialIndex.Build(Organisms);
         World.RegenerateFood(Config.FoodRegenRate, _rng);
-        PerceptionSystem.Tick(World, Organisms, Config);
+        PerceptionSystem.Tick(World, Organisms, _spatialIndex, Config);
         AISystem.Tick(Organisms, Config, _rng);
         MovementSystem.Tick(World, Organisms, Config);
         FeedingSystem.Tick(World, Organisms, Config);
@@ -41,6 +44,7 @@ public class Simulation
     {
         Config = newConfig;
         _rng = new Random(newConfig.Seed);
+        _spatialIndex = new SpatialIndex(World.PixelWidth, World.PixelHeight, newConfig.SpatialCellPixels);
         WorldSeeder.Seed(World, Organisms, newConfig, _rng);
         TickCount = 0;
         LatestStats = Stats.Compute(Organisms, World);
