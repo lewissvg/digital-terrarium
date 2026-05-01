@@ -28,7 +28,8 @@ public static class MovementSystem
 
             // Drain: based on INTENDED velocity (raw)
             float intendedSpeed = o.Velocity.Length();
-            float drain = config.EnergyDrainCoefficient * intendedSpeed * intendedSpeed * o.Genes.Metabolism * Mass;
+            float effectiveMetabolism = o.Genes.Metabolism * (1f + o.Genes.DietType * config.CarnivoreTax);
+            float drain = config.EnergyDrainCoefficient * intendedSpeed * intendedSpeed * effectiveMetabolism * Mass;
             o.Energy -= drain;
 
             // Effective displacement: scaled by biome × affinity match

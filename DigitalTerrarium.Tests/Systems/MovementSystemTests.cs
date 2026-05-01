@@ -48,7 +48,7 @@ public class MovementSystemTests
 
         MovementSystem.Tick(world, new List<Organism> { organism }, SimulationConfig.Default);
 
-        Assert.Equal(energyBefore - 0.8f, organism.Energy, precision: 3);
+        Assert.Equal(energyBefore - 1.0f, organism.Energy, precision: 3);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class MovementSystemTests
 
         MovementSystem.Tick(world, new List<Organism> { o }, SimulationConfig.Default);
 
-        Assert.Equal(energyBefore - 0.8f, o.Energy, precision: 3);
+        Assert.Equal(energyBefore - 1.0f, o.Energy, precision: 3);
     }
 
     [Fact]
@@ -204,5 +204,48 @@ public class MovementSystemTests
 
         Assert.Equal(0f, o.Velocity.Y, precision: 3);
         Assert.Null(o.Target);
+    }
+
+    [Fact]
+    public void Tick_CarnivoreBurnsMoreEnergyThanHerbivore()
+    {
+        var world = new World();
+        var herb = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, DietType: 0f, TerrainAffinity: 0.5f), 0);
+        var carn = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, DietType: 1f, TerrainAffinity: 0.5f), 0);
+        herb.Velocity = new Vector2(4, 0);
+        carn.Velocity = new Vector2(4, 0);
+        herb.State = AIState.Target;
+        carn.State = AIState.Target;
+        float herbStart = herb.Energy;
+        float carnStart = carn.Energy;
+
+        var config = SimulationConfig.Default with { CarnivoreTax = 0.5f };
+
+        MovementSystem.Tick(world, new List<Organism> { herb, carn }, config);
+
+        float herbDrain = herbStart - herb.Energy;
+        float carnDrain = carnStart - carn.Energy;
+        // Carnivore at DietType=1 with tax=0.5 burns 1.5× more
+        Assert.Equal(herbDrain * 1.5f, carnDrain, precision: 3);
+    }
+
+    [Fact]
+    public void Tick_CarnivoreTaxZero_BurnsSameAsHerbivore()
+    {
+        var world = new World();
+        var herb = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, DietType: 0f, TerrainAffinity: 0.5f), 0);
+        var carn = Organism.NewBorn(new Vector2(100, 100), new Genome(4, 1, 30, DietType: 1f, TerrainAffinity: 0.5f), 0);
+        herb.Velocity = new Vector2(4, 0);
+        carn.Velocity = new Vector2(4, 0);
+        herb.State = AIState.Target;
+        carn.State = AIState.Target;
+        float herbStart = herb.Energy;
+        float carnStart = carn.Energy;
+
+        var config = SimulationConfig.Default with { CarnivoreTax = 0f };
+
+        MovementSystem.Tick(world, new List<Organism> { herb, carn }, config);
+
+        Assert.Equal(herbStart - herb.Energy, carnStart - carn.Energy, precision: 3);
     }
 }
