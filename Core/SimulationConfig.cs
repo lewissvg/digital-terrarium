@@ -16,6 +16,10 @@ public record SimulationConfig
 
     public int BiomeNoiseScale { get; init; } = 20;
     public float MudSandBalance { get; init; } = 0.5f;
+    public int SpatialCellPixels { get; init; } = 80;
+    public float ReproductionMatchThreshold { get; init; } = 0.5f;
+    public float CarnivoreTax { get; init; } = 0.5f;
+    public int StatsSmoothingTicks { get; init; } = 30;
 
     public const int WorldTilesX = 300;
     public const int WorldTilesY = 300;
