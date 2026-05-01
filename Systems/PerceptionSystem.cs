@@ -17,7 +17,8 @@ public static class PerceptionSystem
         foreach (var organism in organisms)
         {
             float perceptionCost = config.PerceptionCostCoefficient * MathF.PI * organism.Genes.SenseRange * organism.Genes.SenseRange;
-            organism.Energy -= perceptionCost;
+            if (organism.State != AIState.Rest)
+                organism.Energy -= perceptionCost;
 
             float rangeSquared = organism.Genes.SenseRange * organism.Genes.SenseRange;
 

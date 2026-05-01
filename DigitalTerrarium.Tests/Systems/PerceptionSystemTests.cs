@@ -78,20 +78,20 @@ public class PerceptionSystemTests
     }
 
     [Fact]
-    public void Tick_PerceptionCostAppliesEvenInRestState()
+    public void Tick_NoPerceptionCostWhenResting()
     {
         var world = new World();
         var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
         organism.Energy = 50f;
         organism.State = AIState.Rest;
         var organisms = new List<Organism> { organism };
-
-        var config = SimulationConfig.Default with { PerceptionCostCoefficient = 0.0001f };
         var index = BuildIndex(world, organisms);
+
+        var config = SimulationConfig.Default with { PerceptionCostCoefficient = 0.001f };
 
         PerceptionSystem.Tick(world, organisms, index, config);
 
-        Assert.True(organism.Energy < 50f);
+        Assert.Equal(50f, organism.Energy, precision: 3);
     }
 
     [Fact]
