@@ -9,10 +9,10 @@ public class WorldTests
     {
         var world = new World();
 
-        Assert.Equal(SimulationConfig.WorldTilesX, world.Width);
-        Assert.Equal(SimulationConfig.WorldTilesY, world.Height);
-        Assert.Equal(SimulationConfig.WorldTilesX * SimulationConfig.TileSize, world.PixelWidth);
-        Assert.Equal(SimulationConfig.WorldTilesY * SimulationConfig.TileSize, world.PixelHeight);
+        Assert.Equal(SimulationConfig.Default.WorldTilesX, world.Width);
+        Assert.Equal(SimulationConfig.Default.WorldTilesY, world.Height);
+        Assert.Equal(SimulationConfig.Default.WorldTilesX * SimulationConfig.TileSize, world.PixelWidth);
+        Assert.Equal(SimulationConfig.Default.WorldTilesY * SimulationConfig.TileSize, world.PixelHeight);
     }
 
     [Fact]
