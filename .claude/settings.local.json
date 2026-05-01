@@ -2,7 +2,24 @@
   "permissions": {
     "allow": [
       "Bash(dotnet test *)",
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(grep -v '^$')",
+      "Bash(git -C C:/dev/DigitalTerrarium add Core/SimulationConfig.cs Core/World.cs Core/Simulation.cs)",
+      "Bash(git -C C:/dev/DigitalTerrarium commit -m \"feat\\(core\\): WorldTilesX/Y become init properties; World takes SimulationConfig\")",
+      "Bash(git -C /c/dev/DigitalTerrarium branch)",
+      "Bash(git -C /c/dev/DigitalTerrarium add Systems/SpatialIndex.cs DigitalTerrarium.Tests/Systems/SpatialIndexTests.cs)",
+      "Bash(git -C /c/dev/DigitalTerrarium commit -m \"feat\\(systems\\): add SpatialIndex uniform-grid spatial partitioning\")",
+      "Bash(git -C /c/dev/DigitalTerrarium add Systems/PerceptionSystem.cs Core/Simulation.cs DigitalTerrarium.Tests/Systems/PerceptionSystemTests.cs)",
+      "Bash(git -C /c/dev/DigitalTerrarium commit -m ' *)",
+      "Bash(git -C C:/dev/DigitalTerrarium add Systems/MovementSystem.cs DigitalTerrarium.Tests/Systems/MovementSystemTests.cs)",
+      "Bash(git -C C:/dev/DigitalTerrarium commit -m \"feat\\(systems\\): carnivore metabolism tax \\(DietType-scaled drain multiplier\\)\")",
+      "Bash(git -C /c/dev/DigitalTerrarium add Systems/AISystem.cs DigitalTerrarium.Tests/Systems/AISystemTests.cs)",
+      "Bash(git -C C:/dev/DigitalTerrarium add Systems/ReproductionSystem.cs Core/Simulation.cs DigitalTerrarium.Tests/Systems/ReproductionSystemTests.cs)",
+      "Bash(git -C C:/dev/DigitalTerrarium commit -m ' *)",
+      "Bash(git -C /c/dev/DigitalTerrarium add Core/StatsSmoother.cs DigitalTerrarium.Tests/Core/StatsSmootherTests.cs)"
     ]
   }
 }
