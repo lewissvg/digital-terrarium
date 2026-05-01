@@ -4,5 +4,6 @@ public enum AIState
 {
     Wander,
     Target,
-    Rest
+    Rest,
+    Flee
 }

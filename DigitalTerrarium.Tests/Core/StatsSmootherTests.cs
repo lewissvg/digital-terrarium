@@ -8,7 +8,7 @@ public class StatsSmootherTests
         new StatsSnapshot(
             Population: pop, OldestAge: 0, MaxGeneration: 0,
             AvgSpeed: 0, AvgMetabolism: 0, AvgSenseRange: 0,
-            AvgDietType: diet, AvgTerrainAffinity: 0,
+            AvgDietType: diet, AvgTerrainAffinity: 0, AvgWanderlust: 0,
             PopMud: popMud, PopGrassland: popG, PopSand: popS);
 
     [Fact]

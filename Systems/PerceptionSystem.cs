@@ -16,11 +16,15 @@ public static class PerceptionSystem
 
         foreach (var organism in organisms)
         {
-            float perceptionCost = config.PerceptionCostCoefficient * MathF.PI * organism.Genes.SenseRange * organism.Genes.SenseRange;
+            // Calculate hunger factor: 1.0 when full, up to HungerDilationMultiplier when starving
+            float energyRatio = organism.Energy / organism.MaxEnergy;
+            float hungerFactor = 1f + (1f - energyRatio) * (config.HungerDilationMultiplier - 1f);
+            float effectiveRange = organism.Genes.SenseRange * hungerFactor;
+            float effectiveRangeSquared = effectiveRange * effectiveRange;
+
+            float perceptionCost = config.PerceptionCostCoefficient * MathF.PI * effectiveRange * effectiveRange;
             if (organism.State != AIState.Rest)
                 organism.Energy -= perceptionCost;
-
-            float rangeSquared = organism.Genes.SenseRange * organism.Genes.SenseRange;
 
             float bestFoodDistanceSquared = float.MaxValue;
             Vector2? bestFoodPosition = null;
@@ -29,7 +33,7 @@ public static class PerceptionSystem
             {
                 int centerTileX = (int)(organism.Position.X / tileSize);
                 int centerTileY = (int)(organism.Position.Y / tileSize);
-                int radiusTiles = (int)MathF.Ceiling(organism.Genes.SenseRange / tileSize);
+                int radiusTiles = (int)MathF.Ceiling(effectiveRange / tileSize);
 
                 for (int dy = -radiusTiles; dy <= radiusTiles; dy++)
                 {
@@ -44,7 +48,7 @@ public static class PerceptionSystem
 
                         var center = new Vector2(tileX * tileSize + halfTile, tileY * tileSize + halfTile);
                         float distanceSquared = Vector2.DistanceSquared(organism.Position, center);
-                        if (distanceSquared <= rangeSquared && distanceSquared < bestFoodDistanceSquared)
+                        if (distanceSquared <= effectiveRangeSquared && distanceSquared < bestFoodDistanceSquared)
                         {
                             bestFoodDistanceSquared = distanceSquared;
                             bestFoodPosition = center;
@@ -53,6 +57,8 @@ public static class PerceptionSystem
                 }
             }
 
+            // Prey detection uses base sense range (hunger doesn't help find predators)
+            float baseRangeSquared = organism.Genes.SenseRange * organism.Genes.SenseRange;
             float bestPreyDistanceSquared = float.MaxValue;
             Organism bestPrey = null;
 
@@ -63,7 +69,7 @@ public static class PerceptionSystem
                 if (organism.Genes.DietType - other.Genes.DietType <= AttackBuffer) continue;
 
                 float distanceSquared = Vector2.DistanceSquared(organism.Position, other.Position);
-                if (distanceSquared <= rangeSquared && distanceSquared < bestPreyDistanceSquared)
+                if (distanceSquared <= baseRangeSquared && distanceSquared < bestPreyDistanceSquared)
                 {
                     bestPreyDistanceSquared = distanceSquared;
                     bestPrey = other;

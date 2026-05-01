@@ -11,6 +11,7 @@ public readonly record struct StatsSnapshot(
     float AvgSenseRange,
     float AvgDietType,
     float AvgTerrainAffinity,
+    float AvgWanderlust,
     int PopMud,
     int PopGrassland,
     int PopSand);
@@ -20,10 +21,10 @@ public static class Stats
     public static StatsSnapshot Compute(List<Organism> organisms, World world)
     {
         if (organisms.Count == 0)
-            return new StatsSnapshot(0, 0, 0, 0f, 0f, 0f, 0f, 0f, 0, 0, 0);
+            return new StatsSnapshot(0, 0, 0, 0f, 0f, 0f, 0f, 0f, 0f, 0, 0, 0);
 
         int oldest = 0, maxGen = 0;
-        float sumSpeed = 0f, sumMet = 0f, sumSense = 0f, sumDiet = 0f, sumAff = 0f;
+        float sumSpeed = 0f, sumMet = 0f, sumSense = 0f, sumDiet = 0f, sumAff = 0f, sumWander = 0f;
         int popMud = 0, popGrass = 0, popSand = 0;
 
         foreach (var o in organisms)
@@ -35,6 +36,7 @@ public static class Stats
             sumSense += o.Genes.SenseRange;
             sumDiet  += o.Genes.DietType;
             sumAff   += o.Genes.TerrainAffinity;
+            sumWander += o.Genes.Wanderlust;
 
             switch (world.Biomes.AtPixel(o.Position.X, o.Position.Y, world.TileSize))
             {
@@ -54,6 +56,7 @@ public static class Stats
             AvgSenseRange:      sumSense / n,
             AvgDietType:        sumDiet / n,
             AvgTerrainAffinity: sumAff / n,
+            AvgWanderlust:      sumWander / n,
             PopMud:             popMud,
             PopGrassland:       popGrass,
             PopSand:            popSand);

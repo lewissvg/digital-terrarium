@@ -15,6 +15,14 @@ public class Organism
     public Vector2? Target;
     public Organism TargetPrey;
     public int WanderTicksRemaining;
+    public int RestStagnationTicks;
+    public float MetabolismPenalty = 1f;
+    
+    // Threat response fields
+    public Organism? Predator; // Who's hunting us
+    public int FleeTicksRemaining;
+    public Vector2? FleeOrigin; // Where we started fleeing from
+    public const int BaseFleeDuration = 60; // ticks to flee before recovering
 
     public static float ComputeMaxEnergy(Genome genes) =>
         100f + (genes.SenseRange * 0.5f) + (1f / genes.Metabolism * 20f);

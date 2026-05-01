@@ -19,6 +19,7 @@ public class DevPanel
     private readonly Action _onReseed;
 
     private TextBox _seedBox = null!;
+    private readonly Dictionary<string, Label> _labels = new();
 
     public DevPanel(SimulationConfig initial, Action<SimulationConfig> onApplyAndReset, Action onReseed)
     {
@@ -33,15 +34,17 @@ public class DevPanel
     {
         var panel = new VerticalStackPanel
         {
-            Spacing = 4,
+            Spacing = 8,
             Padding = new Myra.Graphics2D.Thickness(8),
-            Background = new SolidBrush(new Microsoft.Xna.Framework.Color(20, 20, 30, 220))
+            Background = new SolidBrush(new Microsoft.Xna.Framework.Color(20, 20, 30, 230))
         };
 
+        // Header
         panel.Widgets.Add(new Label { Text = "DEV PANEL  (F3)", TextColor = Microsoft.Xna.Framework.Color.White });
 
+        // Seed row
         var seedRow = new HorizontalStackPanel { Spacing = 4 };
-        seedRow.Widgets.Add(new Label { Text = "Seed", Width = 80, TextColor = Microsoft.Xna.Framework.Color.White });
+        seedRow.Widgets.Add(new Label { Text = "Seed:", Width = 50, TextColor = Microsoft.Xna.Framework.Color.White });
         _seedBox = new TextBox { Text = _pending.Seed.ToString(), Width = 100 };
         _seedBox.TextChanged += (_, _) =>
         {
@@ -53,57 +56,107 @@ public class DevPanel
         seedRow.Widgets.Add(_seedBox);
         panel.Widgets.Add(seedRow);
 
-        AddSlider(panel, "InitialFoodDensity", 0f, 1f,
+        // Two-column layout using horizontal stack
+        var columnsContainer = new HorizontalStackPanel { Spacing = 16 };
+
+        // Left column
+        var leftColumn = new VerticalStackPanel { Spacing = 4, Width = 260 };
+
+        // Population & Food section
+        leftColumn.Widgets.Add(new Label { Text = "--- Population & Food ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(leftColumn, "InitialFoodDensity", 0f, 1f,
             () => _pending.InitialFoodDensity, value => _pending = _pending with { InitialFoodDensity = value });
-        AddSlider(panel, "FoodRegenRate", 0f, 20f,
+        AddSlider(leftColumn, "FoodRegenRate", 0f, 20f,
             () => _pending.FoodRegenRate, value => _pending = _pending with { FoodRegenRate = value });
-        AddSlider(panel, "FoodEnergyValue", 1f, 100f,
+        AddSlider(leftColumn, "FoodEnergyValue", 1f, 100f,
             () => _pending.FoodEnergyValue, value => _pending = _pending with { FoodEnergyValue = value });
-        AddSlider(panel, "StartingPopulation", 10f, 500f,
+        AddSlider(leftColumn, "StartingPopulation", 10f, 500f,
             () => _pending.StartingPopulation, value => _pending = _pending with { StartingPopulation = (int)value });
-        AddSlider(panel, "MutationRate", 0f, 0.2f,
+
+        // Genetics section
+        leftColumn.Widgets.Add(new Label { Text = "--- Genetics ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(leftColumn, "MutationRate", 0f, 0.2f,
             () => _pending.MutationRate, value => _pending = _pending with { MutationRate = value });
-        AddSlider(panel, "InitialMaxDietType", 0f, 1f,
+        AddSlider(leftColumn, "InitialMaxDietType", 0f, 1f,
             () => _pending.InitialMaxDietType, value => _pending = _pending with { InitialMaxDietType = value });
-        AddSlider(panel, "PerceptionCostCoefficient", 0f, 0.001f,
-            () => _pending.PerceptionCostCoefficient, value => _pending = _pending with { PerceptionCostCoefficient = value });
-        AddSlider(panel, "ReproductionThreshold", 0.5f, 1f,
-            () => _pending.ReproductionThreshold, value => _pending = _pending with { ReproductionThreshold = value });
-        AddSlider(panel, "EnergyDrainCoefficient", 0.001f, 1f,
+        AddSlider(leftColumn, "WanderlustMin", 0f, 1f,
+            () => _pending.InitialWanderlustMin, v => _pending = _pending with { InitialWanderlustMin = v });
+        AddSlider(leftColumn, "WanderlustMax", 0f, 1f,
+            () => _pending.InitialWanderlustMax, v => _pending = _pending with { InitialWanderlustMax = v });
+
+        // Metabolism section
+        leftColumn.Widgets.Add(new Label { Text = "--- Metabolism ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(leftColumn, "EnergyDrainCoefficient", 0.001f, 1f,
             () => _pending.EnergyDrainCoefficient, value => _pending = _pending with { EnergyDrainCoefficient = value });
-        AddSlider(panel, "RestEnergyRecovery", 0f, 0.5f,
-            () => _pending.RestEnergyRecovery, value => _pending = _pending with { RestEnergyRecovery = value });
-        AddSlider(panel, "BiomeNoiseScale", 5f, 50f,
-            () => _pending.BiomeNoiseScale,
-            v => _pending = _pending with { BiomeNoiseScale = (int)v });
-        AddSlider(panel, "MudSandBalance", 0.2f, 0.8f,
-            () => _pending.MudSandBalance,
-            v => _pending = _pending with { MudSandBalance = v });
-        AddSlider(panel, "WorldTilesX", 100f, 600f,
-            () => _pending.WorldTilesX, v => _pending = _pending with { WorldTilesX = (int)v });
-        AddSlider(panel, "WorldTilesY", 100f, 600f,
-            () => _pending.WorldTilesY, v => _pending = _pending with { WorldTilesY = (int)v });
-        AddSlider(panel, "WindowWidth", 800f, 2400f,
-            () => _pending.WindowWidth, v => _pending = _pending with { WindowWidth = (int)v });
-        AddSlider(panel, "WindowHeight", 600f, 1600f,
-            () => _pending.WindowHeight, v => _pending = _pending with { WindowHeight = (int)v });
-        AddSlider(panel, "SpatialCellPixels", 20f, 200f,
-            () => _pending.SpatialCellPixels, v => _pending = _pending with { SpatialCellPixels = (int)v });
-        AddSlider(panel, "ReproductionMatchThreshold", 0f, 1f,
-            () => _pending.ReproductionMatchThreshold,
-            v => _pending = _pending with { ReproductionMatchThreshold = v });
-        AddSlider(panel, "CarnivoreTax", 0f, 2f,
+        AddSlider(leftColumn, "PerceptionCostCoefficient", 0f, 0.001f,
+            () => _pending.PerceptionCostCoefficient, value => _pending = _pending with { PerceptionCostCoefficient = value });
+        AddSlider(leftColumn, "CarnivoreTax", 0f, 2f,
             () => _pending.CarnivoreTax, v => _pending = _pending with { CarnivoreTax = v });
-        AddSlider(panel, "StatsSmoothingTicks", 1f, 120f,
+
+        // Resting section
+        leftColumn.Widgets.Add(new Label { Text = "--- Resting ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(leftColumn, "RestEnergyRecovery", 0f, 0.5f,
+            () => _pending.RestEnergyRecovery, value => _pending = _pending with { RestEnergyRecovery = value });
+        AddSlider(leftColumn, "RestStagnationThreshold", 10f, 500f,
+            () => _pending.RestStagnationThreshold, v => _pending = _pending with { RestStagnationThreshold = (int)v });
+        AddSlider(leftColumn, "RestStagnationPenaltyRate", 0.01f, 0.2f,
+            () => _pending.RestStagnationPenaltyRate, v => _pending = _pending with { RestStagnationPenaltyRate = v });
+        AddSlider(leftColumn, "HungerDilationMultiplier", 1f, 10f,
+            () => _pending.HungerDilationMultiplier, v => _pending = _pending with { HungerDilationMultiplier = v });
+
+        // Right column
+        var rightColumn = new VerticalStackPanel { Spacing = 4, Width = 260 };
+
+        // Reproduction section
+        rightColumn.Widgets.Add(new Label { Text = "--- Reproduction ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(rightColumn, "ReproductionThreshold", 0.5f, 1f,
+            () => _pending.ReproductionThreshold, value => _pending = _pending with { ReproductionThreshold = value });
+        AddSlider(rightColumn, "ReproductionMatchThreshold", 0f, 1f,
+            () => _pending.ReproductionMatchThreshold, v => _pending = _pending with { ReproductionMatchThreshold = v });
+
+        // Biome section
+        rightColumn.Widgets.Add(new Label { Text = "--- Biome ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(rightColumn, "BiomeNoiseScale", 5f, 50f,
+            () => _pending.BiomeNoiseScale, v => _pending = _pending with { BiomeNoiseScale = (int)v });
+        AddSlider(rightColumn, "MudSandBalance", 0.2f, 0.8f,
+            () => _pending.MudSandBalance, v => _pending = _pending with { MudSandBalance = v });
+
+        // World section
+        rightColumn.Widgets.Add(new Label { Text = "--- World ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(rightColumn, "WorldTilesX", 100f, 600f,
+            () => _pending.WorldTilesX, v => _pending = _pending with { WorldTilesX = (int)v });
+        AddSlider(rightColumn, "WorldTilesY", 100f, 600f,
+            () => _pending.WorldTilesY, v => _pending = _pending with { WorldTilesY = (int)v });
+        AddSlider(rightColumn, "SpatialCellPixels", 20f, 200f,
+            () => _pending.SpatialCellPixels, v => _pending = _pending with { SpatialCellPixels = (int)v });
+
+        // Display section
+        rightColumn.Widgets.Add(new Label { Text = "--- Display ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(rightColumn, "WindowWidth", 800f, 2400f,
+            () => _pending.WindowWidth, v => _pending = _pending with { WindowWidth = (int)v });
+        AddSlider(rightColumn, "WindowHeight", 600f, 1600f,
+            () => _pending.WindowHeight, v => _pending = _pending with { WindowHeight = (int)v });
+
+        // Performance section
+        rightColumn.Widgets.Add(new Label { Text = "--- Performance ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
+        AddSlider(rightColumn, "StatsSmoothingTicks", 1f, 120f,
             () => _pending.StatsSmoothingTicks, v => _pending = _pending with { StatsSmoothingTicks = (int)v });
 
-        var applyButton = new Button { Content = new Label { Text = "Apply & Reset", TextColor = Microsoft.Xna.Framework.Color.Black } };
-        applyButton.Click += (_, _) => _onApplyAndReset(_pending);
-        panel.Widgets.Add(applyButton);
+        columnsContainer.Widgets.Add(leftColumn);
+        columnsContainer.Widgets.Add(rightColumn);
+        panel.Widgets.Add(columnsContainer);
 
-        var reseedButton = new Button { Content = new Label { Text = "Reseed Same Config", TextColor = Microsoft.Xna.Framework.Color.Black } };
+        // Buttons row
+        var buttonRow = new HorizontalStackPanel { Spacing = 8 };
+        var applyButton = new Button { Content = new Label { Text = "Apply & Reset", TextColor = Microsoft.Xna.Framework.Color.Black }, Width = 120 };
+        applyButton.Click += (_, _) => _onApplyAndReset(_pending);
+        buttonRow.Widgets.Add(applyButton);
+
+        var reseedButton = new Button { Content = new Label { Text = "Reseed", TextColor = Microsoft.Xna.Framework.Color.Black }, Width = 120 };
         reseedButton.Click += (_, _) => _onReseed();
-        panel.Widgets.Add(reseedButton);
+        buttonRow.Widgets.Add(reseedButton);
+
+        panel.Widgets.Add(buttonRow);
 
         return panel;
     }
@@ -112,7 +165,8 @@ public class DevPanel
     {
         var row = new VerticalStackPanel { Spacing = 2 };
         var nameLabel = new Label { Text = $"{label}: {getter():G3}", TextColor = Microsoft.Xna.Framework.Color.White };
-        var slider = new HorizontalSlider { Minimum = min, Maximum = max, Value = getter(), Width = 200 };
+        _labels[label] = nameLabel;
+        var slider = new HorizontalSlider { Minimum = min, Maximum = max, Value = getter(), Width = 240 };
         slider.ValueChanged += (_, _) =>
         {
             setter(slider.Value);

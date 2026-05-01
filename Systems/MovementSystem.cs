@@ -22,9 +22,26 @@ public static class MovementSystem
             {
                 float cap = o.MaxEnergy * restCap;
                 if (o.Energy < cap)
-                    o.Energy = MathF.Min(cap, o.Energy + config.RestEnergyRecovery);
+                {
+                    // Apply stagnation penalty: slow recovery the longer we stay in place
+                    float effectiveRecovery = config.RestEnergyRecovery * (1f / o.MetabolismPenalty);
+                    o.Energy = MathF.Min(cap, o.Energy + effectiveRecovery);
+                }
+                
+                // Accumulate stagnation while resting in the same spot
+                o.RestStagnationTicks++;
+                if (o.RestStagnationTicks > config.RestStagnationThreshold)
+                {
+                    // Penalty grows: 1% extra drain per threshold period beyond the first
+                    float penaltyPeriods = (o.RestStagnationTicks - config.RestStagnationThreshold) / (float)config.RestStagnationThreshold;
+                    o.MetabolismPenalty = 1f + (penaltyPeriods * config.RestStagnationPenaltyRate);
+                }
                 continue;
             }
+            
+            // Reset stagnation and penalty when we leave REST state
+            o.RestStagnationTicks = 0;
+            o.MetabolismPenalty = 1f;
 
             // Drain: based on INTENDED velocity (raw)
             float intendedSpeed = o.Velocity.Length();

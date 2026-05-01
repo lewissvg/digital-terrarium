@@ -28,7 +28,8 @@ public static class WorldSeeder
             float senseRange = Lerp(10f, 80f, (float)rng.NextDouble());
             float dietType = (float)rng.NextDouble() * config.InitialMaxDietType;
             float affinity = (float)rng.NextDouble();
-            var genes = new Genome(speed, metabolism, senseRange, dietType, affinity);
+            float wanderlust = Lerp(config.InitialWanderlustMin, config.InitialWanderlustMax, (float)rng.NextDouble());
+            var genes = new Genome(speed, metabolism, senseRange, dietType, affinity, wanderlust);
 
             float px = (float)rng.NextDouble() * world.PixelWidth;
             float py = (float)rng.NextDouble() * world.PixelHeight;

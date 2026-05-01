@@ -34,6 +34,7 @@ public class Simulation
         _spatialIndex.Build(Organisms);
         World.RegenerateFood(Config.FoodRegenRate, _rng);
         PerceptionSystem.Tick(World, Organisms, _spatialIndex, Config);
+        ThreatResponseSystem.Tick(Organisms, _spatialIndex, Config);
         AISystem.Tick(Organisms, Config, _rng);
         MovementSystem.Tick(World, Organisms, Config);
         FeedingSystem.Tick(World, Organisms, Config);

@@ -38,6 +38,7 @@ public class Dashboard
             $"  Sense:      {stats.AvgSenseRange:F1}\n" +
             $"  Diet:       {stats.AvgDietType:F2}\n" +
             $"  Affinity:   {stats.AvgTerrainAffinity:F2}\n" +
+            $"  Wanderlust: {stats.AvgWanderlust:F2}\n" +
             "\n" +
             "BIOMES (% pop)\n" +
             $"  Mud:        {mudPct}\n" +

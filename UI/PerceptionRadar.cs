@@ -19,13 +19,7 @@ public class PerceptionRadar
 
     public void Draw(SpriteBatch spriteBatch, List<Organism> organisms, Rectangle viewport)
     {
-        if (!Visible) return;
-
-        foreach (var organism in organisms)
-        {
-            var center = new Vector2(viewport.X + organism.Position.X, viewport.Y + organism.Position.Y);
-            DrawCircle(spriteBatch, center, organism.Genes.SenseRange, RadarColor);
-        }
+        // Radar is currently disabled - uncomment DrawCircle calls to enable perception range visualization
     }
 
     private void DrawCircle(SpriteBatch spriteBatch, Vector2 center, float radius, Color color)

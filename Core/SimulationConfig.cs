@@ -13,6 +13,11 @@ public record SimulationConfig
     public float ReproductionThreshold { get; init; } = 0.9f;
     public float EnergyDrainCoefficient { get; init; } = 0.05f;
     public float RestEnergyRecovery { get; init; } = 0.05f;
+    public int RestStagnationThreshold { get; init; } = 100;
+    public float RestStagnationPenaltyRate { get; init; } = 0.02f;
+    public float HungerDilationMultiplier { get; init; } = 3.0f;
+    public float InitialWanderlustMin { get; init; } = 0.0f;
+    public float InitialWanderlustMax { get; init; } = 1.0f;
 
     public int BiomeNoiseScale { get; init; } = 20;
     public float MudSandBalance { get; init; } = 0.5f;

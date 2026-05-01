@@ -5,7 +5,8 @@ public record Genome(
     float Metabolism,
     float SenseRange,
     float DietType,
-    float TerrainAffinity)
+    float TerrainAffinity,
+    float Wanderlust = 0.5f) // Default 0.5 = neutral, no bias
 {
     public const float MinSpeed           = 0.1f;
     public const float MinMetabolism      = 0.1f;
@@ -14,6 +15,8 @@ public record Genome(
     public const float MaxDietType        = 1f;
     public const float MinTerrainAffinity = 0f;
     public const float MaxTerrainAffinity = 1f;
+    public const float MinWanderlust      = 0f;
+    public const float MaxWanderlust      = 1f;
 
     public Genome Mutate(float rate, Random rng)
     {
@@ -37,6 +40,7 @@ public record Genome(
             Metabolism:      DriftMul(Metabolism, MinMetabolism),
             SenseRange:      DriftMul(SenseRange, MinSenseRange),
             DietType:        DriftAdd(DietType, MinDietType, MaxDietType),
-            TerrainAffinity: DriftAdd(TerrainAffinity, MinTerrainAffinity, MaxTerrainAffinity));
+            TerrainAffinity: DriftAdd(TerrainAffinity, MinTerrainAffinity, MaxTerrainAffinity),
+            Wanderlust:      DriftAdd(Wanderlust, MinWanderlust, MaxWanderlust));
     }
 }

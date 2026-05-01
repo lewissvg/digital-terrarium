@@ -66,7 +66,8 @@ public class PerceptionSystemTests
     {
         var world = new World();
         var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
-        organism.Energy = 100f;
+        // Set energy to max so hunger dilation = 1.0 (tests base perception cost)
+        organism.Energy = organism.MaxEnergy;
         var organisms = new List<Organism> { organism };
 
         var config = SimulationConfig.Default with { PerceptionCostCoefficient = 0.001f };
@@ -74,7 +75,7 @@ public class PerceptionSystemTests
 
         PerceptionSystem.Tick(world, organisms, index, config);
 
-        Assert.Equal(100f - 2.827f, organism.Energy, precision: 2);
+        Assert.Equal(135f - 2.827f, organism.Energy, precision: 2);
     }
 
     [Fact]
@@ -154,6 +155,49 @@ public class PerceptionSystemTests
 
         Assert.Null(hunter.TargetPrey);
         Assert.NotNull(hunter.Target);
+    }
+
+    [Fact]
+    public void Tick_HungerDilatesFoodPerceptionRange()
+    {
+        var world = new World();
+        
+        // Organism at center (40,40), sense range 30
+        // With 15% energy and 3x dilation: effective range = 30 * (1 + 0.85 * 2) = 81 pixels
+        var organism = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
+        organism.Energy = organism.MaxEnergy * 0.15f; // Starving
+        
+        // Place food at tile (20, 20) = pixel (80, 80)
+        // Distance from (40,40) to (80,80) ≈ 57 pixels - within dilated range (81)
+        world.SetFood(20, 20, true);
+        
+        var organisms = new List<Organism> { organism };
+        var index = BuildIndex(world, organisms);
+
+        var config = SimulationConfig.Default with { HungerDilationMultiplier = 3f };
+        PerceptionSystem.Tick(world, organisms, index, config);
+
+        // Should find food with dilated perception
+        Assert.NotNull(organism.Target);
+    }
+
+    [Fact]
+    public void Tick_HungerDoesNotDilatePreyPerception()
+    {
+        var world = new World();
+        var hunter = Organism.NewBorn(new Vector2(40, 40), new Genome(4, 1, 20, DietType: 0.8f, TerrainAffinity: 0.5f), 0);
+        hunter.Energy = hunter.MaxEnergy * 0.1f; // Starving
+        
+        // Prey at distance ~50 pixels - outside normal range (20) but within dilated (60)
+        var prey = Organism.NewBorn(new Vector2(90, 40), new Genome(2, 1, 10, DietType: 0.1f, TerrainAffinity: 0.5f), 0);
+        var organisms = new List<Organism> { hunter, prey };
+        var index = BuildIndex(world, organisms);
+
+        var config = SimulationConfig.Default with { HungerDilationMultiplier = 3f };
+        PerceptionSystem.Tick(world, organisms, index, config);
+
+        // Prey should NOT be detected because prey perception is not dilated
+        Assert.Null(hunter.TargetPrey);
     }
 
     [Fact]
