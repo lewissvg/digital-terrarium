@@ -61,4 +61,30 @@ public class AISystemTests
 
         Assert.True(organism.WanderTicksRemaining > 0);
     }
+
+    [Fact]
+    public void Tick_RestExitsToWanderWhenEnergyAtCap()
+    {
+        Organism o = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
+        o.State = AIState.Rest;
+        o.Energy = o.MaxEnergy * SimulationConfig.RestRecoveryCapFraction; // exactly at cap
+        o.Target = null;
+
+        AISystem.Tick(new List<Organism> { o }, Config, new Random(1));
+
+        Assert.NotEqual(AIState.Rest, o.State);
+    }
+
+    [Fact]
+    public void Tick_RestRemainsBelowCap()
+    {
+        Organism o = Organism.NewBorn(new Vector2(10, 10), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
+        o.State = AIState.Rest;
+        o.Energy = o.MaxEnergy * 0.30f; // above 20% threshold, below 50% cap
+        o.Target = null;
+
+        AISystem.Tick(new List<Organism> { o }, Config, new Random(1));
+
+        Assert.Equal(AIState.Rest, o.State);
+    }
 }
