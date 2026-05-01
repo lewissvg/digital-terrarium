@@ -79,6 +79,23 @@ public class DevPanel
         AddSlider(panel, "MudSandBalance", 0.2f, 0.8f,
             () => _pending.MudSandBalance,
             v => _pending = _pending with { MudSandBalance = v });
+        AddSlider(panel, "WorldTilesX", 100f, 600f,
+            () => _pending.WorldTilesX, v => _pending = _pending with { WorldTilesX = (int)v });
+        AddSlider(panel, "WorldTilesY", 100f, 600f,
+            () => _pending.WorldTilesY, v => _pending = _pending with { WorldTilesY = (int)v });
+        AddSlider(panel, "WindowWidth", 800f, 2400f,
+            () => _pending.WindowWidth, v => _pending = _pending with { WindowWidth = (int)v });
+        AddSlider(panel, "WindowHeight", 600f, 1600f,
+            () => _pending.WindowHeight, v => _pending = _pending with { WindowHeight = (int)v });
+        AddSlider(panel, "SpatialCellPixels", 20f, 200f,
+            () => _pending.SpatialCellPixels, v => _pending = _pending with { SpatialCellPixels = (int)v });
+        AddSlider(panel, "ReproductionMatchThreshold", 0f, 1f,
+            () => _pending.ReproductionMatchThreshold,
+            v => _pending = _pending with { ReproductionMatchThreshold = v });
+        AddSlider(panel, "CarnivoreTax", 0f, 2f,
+            () => _pending.CarnivoreTax, v => _pending = _pending with { CarnivoreTax = v });
+        AddSlider(panel, "StatsSmoothingTicks", 1f, 120f,
+            () => _pending.StatsSmoothingTicks, v => _pending = _pending with { StatsSmoothingTicks = (int)v });
 
         var applyButton = new Button { Content = new Label { Text = "Apply & Reset", TextColor = Microsoft.Xna.Framework.Color.Black } };
         applyButton.Click += (_, _) => _onApplyAndReset(_pending);

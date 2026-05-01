@@ -42,7 +42,13 @@ public class Game1 : Game
         _desktop = new Desktop();
         _devPanel = new DevPanel(
             _simulation.Config,
-            onApplyAndReset: cfg => _simulation.ApplyConfigAndReset(cfg),
+            onApplyAndReset: cfg =>
+            {
+                _graphics.PreferredBackBufferWidth  = cfg.WindowWidth;
+                _graphics.PreferredBackBufferHeight = cfg.WindowHeight;
+                _graphics.ApplyChanges();
+                _simulation.ApplyConfigAndReset(cfg);
+            },
             onReseed: () => _simulation.ApplyConfigAndReset(_simulation.Config));
         _devPanel.Root.HorizontalAlignment = HorizontalAlignment.Right;
         _devPanel.Root.VerticalAlignment = VerticalAlignment.Bottom;
@@ -84,11 +90,6 @@ public class Game1 : Game
             }
         }
 
-        if (keyboard.IsKeyDown(Keys.V) && _prevKeyboard.IsKeyUp(Keys.V))
-        {
-            _perceptionRadar.Visible = !_perceptionRadar.Visible;
-        }
-
         _time.RunPendingTicks(gameTime.ElapsedGameTime.TotalSeconds, _simulation.Tick);
 
         _prevKeyboard = keyboard;
@@ -105,10 +106,6 @@ public class Game1 : Game
         _renderSystem.Draw(
             _spriteBatch,
             _simulation.World,
-            _simulation.Organisms,
-            new Rectangle(0, 0, viewportSize, viewportSize));
-        _perceptionRadar.Draw(
-            _spriteBatch,
             _simulation.Organisms,
             new Rectangle(0, 0, viewportSize, viewportSize));
         _dashboard.Draw(_spriteBatch, new Rectangle(viewportSize, 0, 224, windowHeight), _simulation, _time);
