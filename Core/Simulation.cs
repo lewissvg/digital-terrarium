@@ -16,7 +16,7 @@ public class Simulation
     public Simulation(SimulationConfig config)
     {
         Config = config;
-        World = new World();
+        World = new World(config);
         Organisms = new List<Organism>();
         _rng = new Random(config.Seed);
         WorldSeeder.Seed(World, Organisms, config, _rng);

@@ -21,8 +21,8 @@ public record SimulationConfig
     public float CarnivoreTax { get; init; } = 0.5f;
     public int StatsSmoothingTicks { get; init; } = 30;
 
-    public const int WorldTilesX = 300;
-    public const int WorldTilesY = 300;
+    public int WorldTilesX { get; init; } = 300;
+    public int WorldTilesY { get; init; } = 300;
     public const int TileSize = 4;
     public const int TickRateHz = 30;
     public const float RestThresholdFraction = 0.20f;

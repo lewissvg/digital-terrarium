@@ -2,9 +2,9 @@ namespace DigitalTerrarium.Core;
 
 public class World
 {
-    public int Width { get; } = SimulationConfig.WorldTilesX;
-    public int Height { get; } = SimulationConfig.WorldTilesY;
-    public int TileSize { get; } = SimulationConfig.TileSize;
+    public int Width { get; }
+    public int Height { get; }
+    public int TileSize { get; }
     public int PixelWidth => Width * TileSize;
     public int PixelHeight => Height * TileSize;
 
@@ -13,12 +13,18 @@ public class World
 
     public BiomeMap Biomes { get; }
 
-    public World()
+    public World(SimulationConfig config)
     {
+        Width    = config.WorldTilesX;
+        Height   = config.WorldTilesY;
+        TileSize = SimulationConfig.TileSize;
         _food = new bool[Width, Height];
         _foodCount = 0;
         Biomes = new BiomeMap(Width, Height);
     }
+
+    // Convenience for tests that don't care about config
+    public World() : this(SimulationConfig.Default) { }
 
     public bool HasFood(int tileX, int tileY)
     {
