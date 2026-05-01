@@ -162,4 +162,47 @@ public class MovementSystemTests
 
         Assert.Equal(102f, o.Position.X, precision: 3);
     }
+
+    [Fact]
+    public void Tick_ClampsAtMaxX_ZeroesXVelocity()
+    {
+        var world = new World();
+        var o = Organism.NewBorn(new Vector2(world.PixelWidth - 1, 100), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
+        o.Velocity = new Vector2(5, 0);
+        o.State = AIState.Target;
+        o.Target = new Vector2(world.PixelWidth + 100, 100);
+
+        MovementSystem.Tick(world, new List<Organism> { o }, SimulationConfig.Default);
+
+        Assert.Equal(0f, o.Velocity.X, precision: 3);
+    }
+
+    [Fact]
+    public void Tick_ClampsAtMaxX_ClearsTarget()
+    {
+        var world = new World();
+        var o = Organism.NewBorn(new Vector2(world.PixelWidth - 1, 100), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
+        o.Velocity = new Vector2(5, 0);
+        o.State = AIState.Target;
+        o.Target = new Vector2(world.PixelWidth + 100, 100);
+
+        MovementSystem.Tick(world, new List<Organism> { o }, SimulationConfig.Default);
+
+        Assert.Null(o.Target);
+    }
+
+    [Fact]
+    public void Tick_ClampsAtZeroY_ZeroesYVelocity()
+    {
+        var world = new World();
+        var o = Organism.NewBorn(new Vector2(100, 0), new Genome(4, 1, 30, 0.5f, 0.5f), 0);
+        o.Velocity = new Vector2(0, -5);
+        o.State = AIState.Target;
+        o.Target = new Vector2(100, -50);
+
+        MovementSystem.Tick(world, new List<Organism> { o }, SimulationConfig.Default);
+
+        Assert.Equal(0f, o.Velocity.Y, precision: 3);
+        Assert.Null(o.Target);
+    }
 }
