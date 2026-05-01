@@ -9,7 +9,7 @@ public static class PerceptionSystem
     private const float CarnivorePlantThreshold = 0.95f;
     private const float AttackBuffer = 0.2f;
 
-    public static void Tick(World world, List<Organism> organisms, SimulationConfig config)
+    public static void Tick(World world, List<Organism> organisms, SpatialIndex spatialIndex, SimulationConfig config)
     {
         int tileSize = world.TileSize;
         float halfTile = tileSize * 0.5f;
@@ -17,7 +17,8 @@ public static class PerceptionSystem
         foreach (var organism in organisms)
         {
             float perceptionCost = config.PerceptionCostCoefficient * MathF.PI * organism.Genes.SenseRange * organism.Genes.SenseRange;
-            organism.Energy -= perceptionCost;
+            if (organism.State != AIState.Rest)
+                organism.Energy -= perceptionCost;
 
             float rangeSquared = organism.Genes.SenseRange * organism.Genes.SenseRange;
 
@@ -55,7 +56,7 @@ public static class PerceptionSystem
             float bestPreyDistanceSquared = float.MaxValue;
             Organism bestPrey = null;
 
-            foreach (var other in organisms)
+            foreach (var other in spatialIndex.Query(organism.Position, organism.Genes.SenseRange))
             {
                 if (ReferenceEquals(other, organism)) continue;
                 if (other.Energy <= 0f) continue;

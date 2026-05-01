@@ -12,6 +12,22 @@ public static class AISystem
     {
         foreach (var organism in organisms)
         {
+            // Auto-exit Rest when energy reaches recovery cap
+            if (organism.State == AIState.Rest)
+            {
+                float cap = organism.MaxEnergy * SimulationConfig.RestRecoveryCapFraction;
+                if (organism.Energy >= cap)
+                {
+                    organism.State = AIState.Wander;
+                    // fall through to wander/target logic below
+                }
+                else
+                {
+                    // remain in Rest, skip remaining AI processing
+                    continue;
+                }
+            }
+
             float restThreshold = organism.MaxEnergy * SimulationConfig.RestThresholdFraction;
 
             if (organism.Target.HasValue && organism.Energy >= restThreshold)
@@ -22,7 +38,6 @@ public static class AISystem
                 {
                     direction.Normalize();
                 }
-
                 organism.Velocity = direction * organism.Genes.Speed;
             }
             else if (organism.Energy < restThreshold && organism.Target == null)

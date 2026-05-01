@@ -15,7 +15,7 @@ public class Dashboard
 
     public void Draw(SpriteBatch spriteBatch, Rectangle area, Simulation simulation, TimeController time)
     {
-        StatsSnapshot stats = simulation.LatestStats;
+        StatsSnapshot stats = simulation.LatestSmoothedStats;
         string speedLabel = time.CurrentMultiplier == 0 ? "PAUSED" : $"{time.CurrentMultiplier}x";
 
         int totalPop = stats.Population;
@@ -26,7 +26,7 @@ public class Dashboard
         string text =
             $"TICK:        {simulation.TickCount,8}\n" +
             $"SPEED:       {speedLabel}\n" +
-            $"SEED:        {simulation.Config.Seed}\n" +
+            $"SEED:\n  {simulation.Config.Seed}\n" +
             "\n" +
             $"POPULATION:  {stats.Population}\n" +
             $"GENERATIONS: {stats.MaxGeneration}\n" +

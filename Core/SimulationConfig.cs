@@ -16,9 +16,16 @@ public record SimulationConfig
 
     public int BiomeNoiseScale { get; init; } = 20;
     public float MudSandBalance { get; init; } = 0.5f;
+    public int SpatialCellPixels { get; init; } = 80;
+    public float ReproductionMatchThreshold { get; init; } = 0.5f;
+    public float CarnivoreTax { get; init; } = 0.5f;
+    public int StatsSmoothingTicks { get; init; } = 30;
+    public int WindowWidth { get; init; } = 1424;
+    public int WindowHeight { get; init; } = 1200;
+    public int ViewportSize { get; init; } = 1200;
 
-    public const int WorldTilesX = 300;
-    public const int WorldTilesY = 300;
+    public int WorldTilesX { get; init; } = 300;
+    public int WorldTilesY { get; init; } = 300;
     public const int TileSize = 4;
     public const int TickRateHz = 30;
     public const float RestThresholdFraction = 0.20f;
