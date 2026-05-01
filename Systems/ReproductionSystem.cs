@@ -6,7 +6,7 @@ namespace DigitalTerrarium.Systems;
 
 public static class ReproductionSystem
 {
-    public static void Tick(List<Organism> organisms, SimulationConfig config, Random rng)
+    public static void Tick(List<Organism> organisms, World world, SimulationConfig config, Random rng)
     {
         int originalCount = organisms.Count;
         for (int i = 0; i < originalCount; i++)
@@ -14,9 +14,12 @@ public static class ReproductionSystem
             var parent = organisms[i];
             float threshold = parent.MaxEnergy * config.ReproductionThreshold;
             if (parent.Energy < threshold)
-            {
                 continue;
-            }
+
+            var biome = world.Biomes.AtPixel(parent.Position.X, parent.Position.Y, world.TileSize);
+            float match = BiomeProperties.Match(parent.Genes.TerrainAffinity, biome);
+            if (match < config.ReproductionMatchThreshold)
+                continue;
 
             float halfEnergy = parent.Energy * 0.5f;
             parent.Energy = halfEnergy;
