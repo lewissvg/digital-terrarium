@@ -107,7 +107,9 @@ public class Game1 : Game
             _spriteBatch,
             _simulation.World,
             _simulation.Organisms,
-            new Rectangle(0, 0, viewportSize, viewportSize));
+            _simulation.Corpses,
+            new Rectangle(0, 0, viewportSize, viewportSize),
+            gameTime);
         _dashboard.Draw(_spriteBatch, new Rectangle(viewportSize, 0, 224, windowHeight), _simulation, _time);
         _spriteBatch.End();
 

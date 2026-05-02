@@ -4,8 +4,10 @@ public record SimulationConfig
 {
     public int Seed { get; init; } = 0;
     public float InitialFoodDensity { get; init; } = 0.15f;
-    public float FoodRegenRate { get; init; } = 2.0f;
+    public float FoodRegenRate { get; init; } = 0.003f;     // Biomass accumulation rate per tick
     public float FoodEnergyValue { get; init; } = 25f;
+    public float BiomassEatThreshold { get; init; } = 0.3f;  // Minimum biomass needed to eat
+    public float BiomassConsumptionRate { get; init; } = 0.4f; // How much biomass eating removes
     public int StartingPopulation { get; init; } = 50;
     public float MutationRate { get; init; } = 0.05f;
     public float InitialMaxDietType { get; init; } = 0.4f;
@@ -29,8 +31,19 @@ public record SimulationConfig
     public int WindowHeight { get; init; } = 1200;
     public int ViewportSize { get; init; } = 1200;
 
-    public int WorldTilesX { get; init; } = 300;
-    public int WorldTilesY { get; init; } = 300;
+    public int WorldTilesX { get; init; } = 250;
+    public int WorldTilesY { get; init; } = 250;
+
+    // Decomposition (corpse nutrients)
+    public float DecompositionRate { get; init; } = 1.0f;    // Multiplier for nutrient release (0-2)
+    public float CorpseNutrientYield { get; init; } = 2.5f;  // Base nutrients per corpse
+    public float CorpseSpreadRadius { get; init; } = 1.5f;   // How far nutrients spread to neighbors
+
+    // Biome degradation & recovery
+    public float GrasslandDegradationChance { get; init; } = 0.02f;  // 2% chance grassland degrades to mud when eaten
+    public float MudRecoveryRate { get; init; } = 0.0005f;            // 0.05% chance per tick for mud to recover
+    public int MudRecoveryCooldown { get; init; } = 600;              // Ticks of no consumption before recovery can start
+
     public const int TileSize = 4;
     public const int TickRateHz = 30;
     public const float RestThresholdFraction = 0.20f;

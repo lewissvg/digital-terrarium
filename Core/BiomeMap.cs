@@ -5,14 +5,16 @@ namespace DigitalTerrarium.Core;
 public class BiomeMap
 {
     private readonly BiomeType[,] _biomes;
+    private readonly int[,] _lastConsumptionTick; // Track when tile was last consumed
     public int Width  { get; }
     public int Height { get; }
 
     public BiomeMap(int width, int height)
     {
-        Width = width;
+        Width  = width;
         Height = height;
         _biomes = new BiomeType[width, height];
+        _lastConsumptionTick = new int[width, height];
         for (int y = 0; y < height; y++)
             for (int x = 0; x < width; x++)
                 _biomes[x, y] = BiomeType.Grassland;
@@ -67,5 +69,29 @@ public class BiomeMap
     {
         if (tileX < 0 || tileX >= Width || tileY < 0 || tileY >= Height) return;
         _biomes[tileX, tileY] = biome;
+    }
+
+    public void SetTile(int tileX, int tileY, BiomeType biome)
+    {
+        if (tileX < 0 || tileX >= Width || tileY < 0 || tileY >= Height) return;
+        _biomes[tileX, tileY] = biome;
+    }
+
+    /// <summary>
+    /// Records that food was consumed at this tile, used for recovery timing
+    /// </summary>
+    public void RecordConsumption(int tileX, int tileY, int currentTick)
+    {
+        if (tileX < 0 || tileX >= Width || tileY < 0 || tileY >= Height) return;
+        _lastConsumptionTick[tileX, tileY] = currentTick;
+    }
+
+    /// <summary>
+    /// Returns true if enough ticks have passed since last consumption
+    /// </summary>
+    public bool CanRecover(int tileX, int tileY, int currentTick, int cooldownTicks)
+    {
+        if (tileX < 0 || tileX >= Width || tileY < 0 || tileY >= Height) return false;
+        return (currentTick - _lastConsumptionTick[tileX, tileY]) >= cooldownTicks;
     }
 }

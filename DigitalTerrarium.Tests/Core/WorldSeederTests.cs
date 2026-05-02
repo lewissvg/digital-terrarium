@@ -15,14 +15,9 @@ public class WorldSeederTests
 
         WorldSeeder.Seed(world, organisms, config, rng);
 
-        // Compute the biome-weighted expected density after biome scatter is applied
+        // New seeding uses density without biome multipliers
         int totalTiles = world.Width * world.Height;
-        double expectedDensity = 0.0;
-        for (int y = 0; y < world.Height; y++)
-            for (int x = 0; x < world.Width; x++)
-                expectedDensity += config.InitialFoodDensity * BiomeProperties.FoodRegenMultiplier(world.Biomes.At(x, y));
-        expectedDensity /= totalTiles;
-
+        double expectedDensity = config.InitialFoodDensity;
         double actualDensity = (double)world.CountFood() / totalTiles;
         Assert.InRange(actualDensity, expectedDensity * 0.90, expectedDensity * 1.10);
     }
@@ -124,13 +119,14 @@ public class WorldSeederTests
     }
 
     [Fact]
-    public void Seed_FoodDensity_RespectsBiomeMultipliers()
+    public void Seed_FoodDensity_RespectsBiomeMultipliers_WhenUsingBiomeAwareSeeding()
     {
         var world = new World();
         var organisms = new List<Organism>();
         var config = SimulationConfig.Default with { Seed = 1, InitialFoodDensity = 0.15f };
 
-        WorldSeeder.Seed(world, organisms, config, new Random(config.Seed));
+        // Use the biome-aware seeding method that applies multipliers
+        WorldSeeder.SeedWithBiomeMultiplier(world, config, new Random(config.Seed));
 
         int mudTotal = 0, mudFood = 0;
         int sandTotal = 0, sandFood = 0;

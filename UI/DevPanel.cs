@@ -66,10 +66,14 @@ public class DevPanel
         leftColumn.Widgets.Add(new Label { Text = "--- Population & Food ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });
         AddSlider(leftColumn, "InitialFoodDensity", 0f, 1f,
             () => _pending.InitialFoodDensity, value => _pending = _pending with { InitialFoodDensity = value });
-        AddSlider(leftColumn, "FoodRegenRate", 0f, 20f,
+        AddSlider(leftColumn, "FoodRegenRate", 0f, 0.02f,
             () => _pending.FoodRegenRate, value => _pending = _pending with { FoodRegenRate = value });
         AddSlider(leftColumn, "FoodEnergyValue", 1f, 100f,
             () => _pending.FoodEnergyValue, value => _pending = _pending with { FoodEnergyValue = value });
+        AddSlider(leftColumn, "BiomassEatThreshold", 0.1f, 0.9f,
+            () => _pending.BiomassEatThreshold, v => _pending = _pending with { BiomassEatThreshold = v });
+        AddSlider(leftColumn, "BiomassConsumptionRate", 0.1f, 1f,
+            () => _pending.BiomassConsumptionRate, v => _pending = _pending with { BiomassConsumptionRate = v });
         AddSlider(leftColumn, "StartingPopulation", 10f, 500f,
             () => _pending.StartingPopulation, value => _pending = _pending with { StartingPopulation = (int)value });
 
@@ -120,6 +124,12 @@ public class DevPanel
             () => _pending.BiomeNoiseScale, v => _pending = _pending with { BiomeNoiseScale = (int)v });
         AddSlider(rightColumn, "MudSandBalance", 0.2f, 0.8f,
             () => _pending.MudSandBalance, v => _pending = _pending with { MudSandBalance = v });
+        AddSlider(rightColumn, "GrasslandDegradationChance", 0f, 0.2f,
+            () => _pending.GrasslandDegradationChance, v => _pending = _pending with { GrasslandDegradationChance = v });
+        AddSlider(rightColumn, "MudRecoveryRate", 0f, 0.01f,
+            () => _pending.MudRecoveryRate, v => _pending = _pending with { MudRecoveryRate = v });
+        AddSlider(rightColumn, "MudRecoveryCooldown", 60f, 1800f,
+            () => _pending.MudRecoveryCooldown, v => _pending = _pending with { MudRecoveryCooldown = (int)v });
 
         // World section
         rightColumn.Widgets.Add(new Label { Text = "--- World ---", TextColor = Microsoft.Xna.Framework.Color.LightGray });

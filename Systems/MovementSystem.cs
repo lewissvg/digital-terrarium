@@ -7,6 +7,7 @@ namespace DigitalTerrarium.Systems;
 public static class MovementSystem
 {
     private const float Mass = 1f;
+    private const float MinTrailDistance = 2f; // Minimum distance to add trail point
 
     public static void Tick(World world, List<Organism> organisms, SimulationConfig config)
     {
@@ -17,6 +18,16 @@ public static class MovementSystem
         foreach (var o in organisms)
         {
             o.Age++;
+
+            // Update trail position history (only when moving significantly)
+            float distMoved = Vector2.Distance(o.Position, o._lastPosition);
+            if (distMoved > MinTrailDistance)
+            {
+                o._positionHistory.Enqueue(o._lastPosition);
+                if (o._positionHistory.Count > Organism.TrailLength)
+                    o._positionHistory.Dequeue();
+                o._lastPosition = o.Position;
+            }
 
             if (o.State == AIState.Rest)
             {

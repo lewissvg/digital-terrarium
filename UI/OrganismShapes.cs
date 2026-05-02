@@ -1,129 +1,162 @@
+using DigitalTerrarium.Core;
+using DigitalTerrarium.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DigitalTerrarium.UI;
 
+/// <summary>
+/// Optimized procedural organism rendering based on genome properties.
+/// Uses batching for efficient drawing of many organisms.
+/// </summary>
 public static class OrganismShapes
 {
     private static GraphicsDevice? _gd;
-    private static Texture2D _triangle = null!;
-    private static Texture2D _diamond = null!;
-    private static Texture2D _circle = null!;
-    private static Texture2D _arrow = null!;
+    private static Texture2D _pixel = null!;
+    private static Texture2D _glow = null!;
+    
+    // Cached render target for biomass layer (massive performance improvement)
+    private static RenderTarget2D? _biomassCache;
+    private static Vector2 _lastCacheSize = Vector2.Zero;
+    
+    // Performance settings
+    public const bool EnableTrails = false; // Disable trails for performance
+    public const int MaxTrailSegments = 0; // No trails by default
 
-    public static Texture2D Triangle => _triangle ?? throw new InvalidOperationException("Call Initialize first");
-    public static Texture2D Diamond => _diamond ?? throw new InvalidOperationException("Call Initialize first");
-    public static Texture2D Circle => _circle ?? throw new InvalidOperationException("Call Initialize first");
-    public static Texture2D Arrow => _arrow ?? throw new InvalidOperationException("Call Initialize first");
+    public static Texture2D Pixel => _pixel ?? throw new InvalidOperationException("Call Initialize first");
 
     public static void Initialize(GraphicsDevice gd)
     {
         _gd = gd;
-        _triangle = BuildTriangle(32);
-        _diamond = BuildDiamond(32);
-        _circle = BuildCircle(32);
-        _arrow = BuildArrow(32);
-    }
+        _pixel = new Texture2D(gd, 1, 1);
+        _pixel.SetData(new[] { Color.White });
 
-    private static Texture2D BuildTriangle(int size)
-    {
-        var data = new Color[size * size];
-        for (int y = 0; y < size; y++)
+        // Create glow texture (soft circle)
+        _glow = new Texture2D(gd, 16, 16);
+        var glowData = new Color[16 * 16];
+        for (int y = 0; y < 16; y++)
         {
-            for (int x = 0; x < size; x++)
+            for (int x = 0; x < 16; x++)
             {
-                float halfWidth = ((size - 1) * 0.5f) * (1f - x / (float)(size - 1));
-                float dy = MathF.Abs(y - (size - 1) * 0.5f);
-                data[y * size + x] = dy <= halfWidth ? Color.White : Color.Transparent;
-            }
-        }
-        return CreateTexture(size, data);
-    }
-
-    private static Texture2D BuildDiamond(int size)
-    {
-        var data = new Color[size * size];
-        for (int y = 0; y < size; y++)
-        {
-            for (int x = 0; x < size; x++)
-            {
-                float cx = size * 0.5f;
-                float cy = size * 0.5f;
-                float dx = MathF.Abs(x - cx) / cx;
-                float dy = MathF.Abs(y - cy) / cy;
-                data[y * size + x] = (dx + dy) <= 1f ? Color.White : Color.Transparent;
-            }
-        }
-        return CreateTexture(size, data);
-    }
-
-    private static Texture2D BuildCircle(int size)
-    {
-        var data = new Color[size * size];
-        float radius = size * 0.45f;
-        float cx = size * 0.5f;
-        float cy = size * 0.5f;
-        
-        for (int y = 0; y < size; y++)
-        {
-            for (int x = 0; x < size; x++)
-            {
+                float cx = 7.5f, cy = 7.5f;
                 float dist = MathF.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
-                if (dist <= radius)
+                if (dist < 8)
                 {
-                    float alpha = Math.Clamp((radius - dist) / 3f, 0f, 1f);
-                    data[y * size + x] = new Color((byte)(255), (byte)(255), (byte)(255), (byte)(alpha * 255));
+                    byte alpha = (byte)Math.Max(0, (int)(150 - dist * 20));
+                    glowData[y * 16 + x] = new Color((byte)255, (byte)255, (byte)255, alpha);
                 }
                 else
                 {
-                    data[y * size + x] = Color.Transparent;
+                    glowData[y * 16 + x] = Color.Transparent;
                 }
             }
         }
-        return CreateTexture(size, data);
+        _glow.SetData(glowData);
+        
+        // Pre-create cached render target (will be resized on first use)
+        _biomassCache = new RenderTarget2D(gd, 1, 1);
     }
+    
+    /// <summary>
+    /// Invalidate the biomass cache (call when world changes significantly)
+    /// </summary>
+    public static void InvalidateCache() => _lastCacheSize = Vector2.Zero;
 
-    private static Texture2D BuildArrow(int size)
+    /// <summary>
+    /// Draw the full organism procedurally based on genome.
+    /// Optimized to minimize draw calls.
+    /// </summary>
+    public static void DrawOrganism(
+        SpriteBatch sb,
+        Vector2 position,
+        Vector2 velocity,
+        Genome genome,
+        Color color,
+        float sizeScale = 1f,
+        float layerDepth = 0f)
     {
-        var data = new Color[size * size];
-        for (int y = 0; y < size; y++)
+        // Calculate rotation from velocity
+        float rotation = velocity.LengthSquared() > 0.01f
+            ? MathF.Atan2(velocity.Y, velocity.X)
+            : 0f;
+
+        // Calculate scaled dimensions
+        float bodyRadius = genome.BodyRadius * sizeScale;
+        float headRadius = genome.HeadRadius * sizeScale;
+        float bodyWidth = genome.BodyWidth * sizeScale;
+        
+        // Use simplified rendering: body + head + simple tail
+        // This reduces from ~8-10 draw calls to ~4-5
+        
+        // 1. Body glow (behind everything)
+        sb.Draw(_glow, position, null, new Color(color.R, color.G, color.B, (byte)(color.A * 0.2f)),
+            rotation, new Vector2(8, 8), bodyRadius * 0.7f, SpriteEffects.None, layerDepth - 0.03f);
+
+        // 2. Tail (if any) - simplified single segment for speed
+        int tailSegments = EnableTrails ? genome.TailSegments : Math.Min(1, genome.TailSegments);
+        if (tailSegments > 0 && EnableTrails)
         {
-            for (int x = 0; x < size; x++)
-            {
-                float lineEnd = size * 0.6f;
-                bool inLine = y >= size * 0.4f && y <= size * 0.6f && x <= lineEnd;
-                
-                float tipY = size * 0.5f;
-                float halfWidth = (size - 1 - lineEnd) * (1f - (x - lineEnd) / (float)(size - 1 - lineEnd));
-                bool inTip = x >= lineEnd && MathF.Abs(y - tipY) <= halfWidth;
-                
-                data[y * size + x] = (inLine || inTip) ? Color.White : Color.Transparent;
-            }
+            float tailLen = genome.TailLength * sizeScale * 0.5f;
+            float tailRot = rotation + MathHelper.Pi;
+            var tailPos = position + new Vector2(MathF.Cos(tailRot), MathF.Sin(tailRot)) * (bodyRadius + tailLen * 0.5f);
+            byte tailAlpha = (byte)(color.A * 0.6f);
+            sb.Draw(_pixel, tailPos, null, new Color(color.R, color.G, color.B, tailAlpha), tailRot,
+                new Vector2(0.5f, 0.5f), new Vector2(tailLen * 1.5f, bodyRadius * 0.6f),
+                SpriteEffects.None, layerDepth - 0.02f);
         }
-        return CreateTexture(size, data);
+
+        // 3. Main body (elongated ellipse)
+        sb.Draw(_pixel, position, null, color, rotation,
+            new Vector2(0.5f, 0.5f), new Vector2(bodyRadius * 1.8f, bodyWidth),
+            SpriteEffects.None, layerDepth);
+
+        // 4. Head (front circle) - only if large enough
+        if (headRadius > 2f)
+        {
+            float headDist = bodyRadius * 0.5f;
+            var headPos = position + new Vector2(MathF.Cos(rotation), MathF.Sin(rotation)) * bodyRadius;
+            sb.Draw(_pixel, headPos, null, color, 0f,
+                new Vector2(0.5f, 0.5f), headRadius * 1.5f,
+                SpriteEffects.None, layerDepth + 0.01f);
+        }
+    }
+    
+    /// <summary>
+    /// Draw a simple organism preview (for trails) - ultra minimal
+    /// </summary>
+    public static void DrawOrganismSimple(
+        SpriteBatch sb,
+        Vector2 position,
+        float rotation,
+        Genome genome,
+        Color color,
+        float sizeScale,
+        float layerDepth)
+    {
+        float bodyRadius = genome.BodyRadius * sizeScale;
+        float bodyWidth = genome.BodyWidth * sizeScale;
+        
+        // Single draw for trail - no glow, no head
+        sb.Draw(_pixel, position, null, color, rotation,
+            new Vector2(0.5f, 0.5f), new Vector2(bodyRadius * 1.5f, bodyWidth),
+            SpriteEffects.None, layerDepth);
     }
 
-    private static Texture2D CreateTexture(int size, Color[] data)
+    // Backwards compatibility - returns a simple circle texture
+    public static Texture2D GetCircle(int size = 32)
     {
-        var tex = new Texture2D(_gd!, size, size);
-        tex.SetData(data);
-        return tex;
+        return _pixel; // Use pixel for all shapes now
     }
-
-    public static Texture2D GetForOrganism(float speed, float wanderlust, float senseRange)
+    
+    internal static class MathHelper
     {
-        // Shape based on speed + wanderlust combination
-        // Fast wanderers = arrow (migratory)
-        // Slow wanderers = diamond (exploratory)
-        // Fast settlers = triangle (burst speed)
-        // Slow settlers = circle (stable)
-        
-        bool isFast = speed > 5f;
-        bool isNomad = wanderlust > 0.5f;
-        
-        if (isFast && isNomad) return Arrow;
-        if (!isFast && isNomad) return Diamond;
-        if (isFast && !isNomad) return Triangle;
-        return Circle;
+        public const float TwoPi = MathF.PI * 2f;
+        public const float Pi = MathF.PI;
+
+        public static float Clamp(float value, float min, float max) =>
+            value < min ? min : value > max ? max : value;
+
+        public static float Lerp(float a, float b, float t) =>
+            a + (b - a) * t;
     }
 }

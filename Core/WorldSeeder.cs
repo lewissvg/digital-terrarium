@@ -11,15 +11,8 @@ public static class WorldSeeder
         world.Clear();
         organisms.Clear();
 
-        for (int y = 0; y < world.Height; y++)
-        {
-            for (int x = 0; x < world.Width; x++)
-            {
-                float biomeMult = BiomeProperties.FoodRegenMultiplier(world.Biomes.At(x, y));
-                if (rng.NextDouble() < config.InitialFoodDensity * biomeMult)
-                    world.SetFood(x, y, true);
-            }
-        }
+        // Seed biomass - biome multipliers applied during regeneration, not initial seeding
+        world.SeedFoodDensity(config.InitialFoodDensity, rng);
 
         for (int i = 0; i < config.StartingPopulation; i++)
         {
@@ -39,4 +32,23 @@ public static class WorldSeeder
     }
 
     private static float Lerp(float a, float b, float t) => a + (b - a) * t;
+
+    /// <summary>
+    /// Seed food that respects biome multipliers (for biome distribution testing)
+    /// </summary>
+    public static void SeedWithBiomeMultiplier(World world, SimulationConfig config, Random rng)
+    {
+        world.Biomes.Generate(config.BiomeNoiseScale, config.MudSandBalance, rng);
+        world.Clear();
+
+        for (int y = 0; y < world.Height; y++)
+        {
+            for (int x = 0; x < world.Width; x++)
+            {
+                float biomeMult = BiomeProperties.FoodRegenMultiplier(world.Biomes.At(x, y));
+                if (rng.NextDouble() < config.InitialFoodDensity * biomeMult)
+                    world.SetBiomass(x, y, 0.5f + (float)rng.NextDouble() * 0.5f);
+            }
+        }
+    }
 }

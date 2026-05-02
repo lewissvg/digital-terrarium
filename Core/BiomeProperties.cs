@@ -4,6 +4,8 @@ namespace DigitalTerrarium.Core;
 
 public static class BiomeProperties
 {
+    public const float BiomassEatThreshold = 0.3f; // Minimum biomass needed to be edible
+
     public static float Optimum(BiomeType b) => b switch
     {
         BiomeType.Mud       => 0f,
